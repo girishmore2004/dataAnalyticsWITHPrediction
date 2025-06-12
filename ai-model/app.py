@@ -1,0 +1,135 @@
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
+from sklearn.svm import SVR
+from sklearn.neural_network import MLPRegressor
+from sklearn.metrics import r2_score
+import joblib
+import os
+
+app = Flask(__name__)
+CORS(app)
+
+# File paths for saving/loading the model and metadata
+MODEL_FILE = "best_model.pkl"
+X_COLUMNS_FILE = "x_columns.pkl"
+TARGET_COLUMN_FILE = "target_column.pkl"
+
+# Global variables to store the model and metadata
+model = None
+X_columns = None
+prediction_target = None
+
+@app.route("/predict", methods=["POST"])
+def predict():
+    global model, X_columns, prediction_target
+
+    try:
+        # Get the request payload
+        data = request.json
+        print("Received payload:", data)  # Debugging: Log the incoming payload
+
+        # Validate the payload
+        required_keys = ["dataset", "selectedColumns", "targetColumn", "inputValues"]
+        if not all(key in data for key in required_keys):
+            return jsonify({"error": "Missing dataset, selected columns, target column, or input values"}), 400
+
+        dataset = data["dataset"]
+        selected_columns = data["selectedColumns"]
+        target_column = data["targetColumn"]
+        input_values = data["inputValues"]
+
+        # Convert dataset to DataFrame
+        df = pd.DataFrame(dataset["rows"], columns=dataset["columns"])
+
+        # Ensure selected columns exist in the dataset
+        if not all(col in df.columns for col in selected_columns):
+            return jsonify({"error": "Some selected columns are missing in the dataset"}), 400
+
+        # Set the target column
+        df = df[selected_columns]
+        prediction_target = target_column
+        if prediction_target not in df.columns:
+            return jsonify({"error": f"Target column '{prediction_target}' is not in the dataset"}), 400
+
+        X = df.drop(columns=[prediction_target])
+        y = df[prediction_target]
+
+        # Convert all data to numeric format
+        X = X.apply(pd.to_numeric, errors="coerce")
+        y = y.apply(pd.to_numeric, errors="coerce")
+
+        # Handle missing values
+        X.fillna(X.mean(), inplace=True)
+        y.fillna(y.mean(), inplace=True)
+
+        # Convert categorical variables to numerical
+        X = pd.get_dummies(X)
+
+        # Split the dataset into training and testing sets
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+        # Train multiple models and select the best one
+        models = {
+            "LinearRegression": LinearRegression(),
+            "DecisionTreeRegressor": DecisionTreeRegressor(random_state=42),
+            "RandomForestRegressor": RandomForestRegressor(random_state=42),
+            "GradientBoostingRegressor": GradientBoostingRegressor(random_state=42),
+            "SupportVectorRegressor": SVR(),
+            "NeuralNetworkRegressor": MLPRegressor(random_state=42, max_iter=1000),
+        }
+
+        best_model, best_r2_score, best_model_name = None, -float("inf"), ""
+
+        for model_name, model_instance in models.items():
+            try:
+                # Train and evaluate the model
+                model_instance.fit(X_train, y_train)
+                y_pred = model_instance.predict(X_test)
+                r2 = r2_score(y_test, y_pred)
+
+                if r2 > best_r2_score:
+                    best_r2_score, best_model, best_model_name = r2, model_instance, model_name
+
+                print(f"Model: {model_name}, R² score: {r2:.4f}")
+
+            except Exception as e:
+                print(f"Error training {model_name}: {e}")
+
+        print(f"Best model: {best_model_name} with R² score: {best_r2_score:.4f}")
+
+        # Save the best model and metadata
+        model, X_columns = best_model, list(X.columns)
+        joblib.dump(model, MODEL_FILE)
+        joblib.dump(X_columns, X_COLUMNS_FILE)
+        joblib.dump(prediction_target, TARGET_COLUMN_FILE)
+
+        # Prepare input DataFrame for prediction
+        input_df = pd.DataFrame([input_values], columns=X_columns)
+        input_df = pd.get_dummies(input_df)
+
+        # Add missing columns
+        for col in set(X_columns) - set(input_df.columns):
+            input_df[col] = 0  
+        input_df = input_df[X_columns]  # Ensure column order
+
+        # Make the prediction
+        prediction = model.predict(input_df)[0]
+
+        return jsonify({
+            "prediction": round(float(prediction), 4),
+            "targetColumn": prediction_target,
+            "r2_score": round(best_r2_score, 4),
+            "best_model": best_model_name
+        })
+
+    except Exception as e:
+        print("Prediction error:", str(e))  # Debugging: Log the error
+        return jsonify({"error": f"Internal Server Error: {str(e)}"}), 500
+
+if __name__ == "__main__":
+    app.run(port=5001, debug=True)
