@@ -90,7 +90,7 @@ function App() {
     formData.append("file", file);
 
     try {
-      const response = await axios.post("http://localhost:5000/upload", formData);
+      const response = await axios.post("https://dataanalyticswithprediction.onrender.com/upload", formData);
       setDataset(response.data);
     } catch (error) {
       console.error("Error uploading file:", error);
@@ -136,7 +136,7 @@ function App() {
         formattedInputValues[key] = parseFloat(value);
       }
 
-      const response = await axios.post("http://127.0.0.1:5001/predict", {
+      const response = await axios.post("https://dataanalyticswithprediction.up.railway.app/predict", {
         dataset,
         selectedColumns,
         targetColumn,
