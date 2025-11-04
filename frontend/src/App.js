@@ -1,1100 +1,8 @@
-// // // import React, { useState } from "react";
-// // // import axios from "axios";
-// // // import { Container, Button, Form, Table, Row, Col } from "react-bootstrap";
-// // // import DataVisualization from "./components/Visualization";
-
-// // // function App() {
-// // //   const [file, setFile] = useState(null);
-// // //   const [dataset, setDataset] = useState(null);
-// // //   const [selectedColumns, setSelectedColumns] = useState([]);
-// // //   const [predictionResult, setPredictionResult] = useState(null);
-// // //   const [showPredictionForm, setShowPredictionForm] = useState(false);
-// // //   const [inputValues, setInputValues] = useState({});
-// // //   const [targetColumn, setTargetColumn] = useState("");
-// // //   const [darkMode, setDarkMode] = useState(false);
-
-// // //   const handleFileChange = (e) => setFile(e.target.files[0]);
-
-// // //   const handleUpload = async () => {
-// // //     if (!file) {
-// // //       alert("Please select a file first!");
-// // //       return;
-// // //     }
-// // //     const formData = new FormData();
-// // //     formData.append("file", file);
-
-// // //     try {
-// // //       const response = await axios.post("http://localhost:5000/upload", formData);
-// // //       setDataset(response.data);
-// // //     } catch (error) {
-// // //       console.error("Error uploading file:", error);
-// // //     }
-// // //   };
-
-// // //   const handleColumnSelect = (col) => {
-// // //     setSelectedColumns((prev) =>
-// // //       prev.includes(col) ? prev.filter((c) => c !== col) : [...prev, col]
-// // //     );
-// // //   };
-
-// // //   const handleShowPredictionForm = () => {
-// // //     if (selectedColumns.length < 2) {
-// // //       alert("Please select at least two columns for prediction.");
-// // //       return;
-// // //     }
-// // //     setShowPredictionForm(true);
-// // //   };
-
-// // //   const handleTargetColumnSelect = (e) => {
-// // //     setTargetColumn(e.target.value);
-// // //     const initialValues = {};
-// // //     selectedColumns
-// // //       .filter((col) => col !== e.target.value)
-// // //       .forEach((col) => {
-// // //         initialValues[col] = "";
-// // //       });
-// // //     setInputValues(initialValues);
-// // //   };
-
-// // //   const handleInputChange = (col, value) => {
-// // //     setInputValues((prev) => ({
-// // //       ...prev,
-// // //       [col]: value,
-// // //     }));
-// // //   };
-
-// // //   const handlePrediction = async () => {
-// // //     try {
-// // //       const formattedInputValues = {};
-// // //       for (const [key, value] of Object.entries(inputValues)) {
-// // //         formattedInputValues[key] = parseFloat(value);
-// // //       }
-
-// // //       const response = await axios.post("http://127.0.0.1:5001/predict", {
-// // //         dataset,
-// // //         selectedColumns,
-// // //         targetColumn,
-// // //         inputValues: formattedInputValues,
-// // //       });
-// // //       setPredictionResult(response.data);
-// // //     } catch (error) {
-// // //       console.error("Error fetching prediction:", error);
-// // //       alert("Prediction failed. Please check the input values and try again.");
-// // //     }
-// // //   };
-
-// // //   const toggleDarkMode = () => setDarkMode(!darkMode);
-
-// // //   const themeStyles = {
-// // //     light: {
-// // //       backgroundColor: "#ffffff",
-// // //       textColor: "#000000",
-// // //       buttonColor: "#4CAF50",
-// // //       buttonTextColor: "#ffffff",
-// // //       tableHeaderColor: "#f8f9fa",
-// // //     },
-// // //     dark: {
-// // //       backgroundColor: "#121212",
-// // //       textColor: "#ffffff",
-// // //       buttonColor: "#4CAF50",
-// // //       buttonTextColor: "#ffffff",
-// // //       tableHeaderColor: "#333333",
-// // //     },
-// // //   };
-
-// // //   const currentTheme = darkMode ? themeStyles.dark : themeStyles.light;
-
-// // //   return (
-// // //     <Container
-// // //       fluid
-// // //       style={{
-// // //         backgroundColor: currentTheme.backgroundColor,
-// // //         color: currentTheme.textColor,
-// // //         minHeight: "100vh",
-// // //         padding: "20px",
-// // //       }}
-// // //     >
-// // //       <Row className="mb-4">
-// // //         <Col>
-// // //           <h2 className="mt-3">📊 Dataset Analyzer</h2>
-// // //         </Col>
-// // //         <Col className="d-flex justify-content-end">
-// // //           <Button
-// // //             onClick={toggleDarkMode}
-// // //             style={{
-// // //               backgroundColor: currentTheme.buttonColor,
-// // //               color: currentTheme.buttonTextColor,
-// // //               border: "none",
-// // //               padding: "10px 20px",
-// // //               borderRadius: "8px",
-// // //               cursor: "pointer",
-// // //             }}
-// // //           >
-// // //             {darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
-// // //           </Button>
-// // //         </Col>
-// // //       </Row>
-
-// // //       <Row className="mb-4">
-// // //         <Col md={8}>
-// // //           <Form.Group>
-// // //             <Form.Label>Select CSV File</Form.Label>
-// // //             <Form.Control
-// // //               type="file"
-// // //               accept=".csv"
-// // //               onChange={handleFileChange}
-// // //               style={{
-// // //                 backgroundColor: currentTheme.backgroundColor,
-// // //                 color: currentTheme.textColor,
-// // //               }}
-// // //             />
-// // //           </Form.Group>
-// // //         </Col>
-// // //         <Col md={4} className="d-flex align-items-end ">
-// // //           <Button
-// // //             onClick={handleUpload}
-// // //             className="w-100"
-// // //             style={{
-// // //               backgroundColor: currentTheme.buttonColor,
-// // //               color: currentTheme.buttonTextColor,
-// // //               marginTop:10,
-// // //             }}
-// // //           >
-// // //             📤 Upload
-// // //           </Button>
-// // //         </Col>
-// // //       </Row>
-
-// // //       {dataset && (
-// // //         <div className="mb-4">
-// // //           <h3>Dataset Preview</h3>
-// // //           <div style={{ maxHeight: "400px", overflowY: "auto" }}>
-// // //             <Table striped bordered hover>
-// // //               <thead style={{ backgroundColor: currentTheme.tableHeaderColor }}>
-// // //                 <tr>
-// // //                   {dataset.columns.map((col, index) => (
-// // //                     <th key={index}>
-// // //                       <Form.Check
-// // //                         type="checkbox"
-// // //                         label={col}
-// // //                         onChange={() => handleColumnSelect(col)}
-// // //                         style={{ color: currentTheme.textColor }}
-// // //                       />
-// // //                     </th>
-// // //                   ))}
-// // //                 </tr>
-// // //               </thead>
-// // //               <tbody>
-// // //                 {dataset.rows.map((row, rowIndex) => (
-// // //                   <tr key={rowIndex}>
-// // //                     {row.map((cell, colIndex) => (
-// // //                       <td key={colIndex}>{cell}</td>
-// // //                     ))}
-// // //                   </tr>
-// // //                 ))}
-// // //               </tbody>
-// // //             </Table>
-// // //           </div>
-// // //           <Button
-// // //             className="mt-3"
-// // //             onClick={handleShowPredictionForm}
-// // //             style={{
-// // //               backgroundColor: currentTheme.buttonColor,
-// // //               color: currentTheme.buttonTextColor,
-// // //               border: "none",
-// // //               padding: "10px 20px",
-// // //               borderRadius: "5px",
-// // //               cursor: "pointer",
-// // //             }}
-// // //           >
-// // //             Predict
-// // //           </Button>
-// // //         </div>
-// // //       )}
-
-// // //       {showPredictionForm && (
-// // //         <Form className="mb-4">
-// // //           <h4>Select Target Column for Prediction</h4>
-// // //           <Form.Select
-// // //             onChange={handleTargetColumnSelect}
-// // //             style={{
-// // //               backgroundColor: currentTheme.backgroundColor,
-// // //               color: currentTheme.textColor,
-// // //             }}
-// // //           >
-// // //             <option value="">Select a column to predict</option>
-// // //             {selectedColumns.map((col, index) => (
-// // //               <option key={index} value={col}>
-// // //                 {col}
-// // //               </option>
-// // //             ))}
-// // //           </Form.Select>
-
-// // //           {targetColumn && (
-// // //             <>
-// // //               <h4 className="mt-3">Enter Input Values for Prediction</h4>
-// // //               {selectedColumns
-// // //                 .filter((col) => col !== targetColumn)
-// // //                 .map((col, index) => (
-// // //                   <Form.Group key={index} className="mb-2">
-// // //                     <Form.Label>{col}</Form.Label>
-// // //                     <Form.Control
-// // //                       type="text"
-// // //                       value={inputValues[col]}
-// // //                       onChange={(e) => handleInputChange(col, e.target.value)}
-// // //                       style={{
-// // //                         backgroundColor: currentTheme.backgroundColor,
-// // //                         color: currentTheme.textColor,
-// // //                       }}
-// // //                     />
-// // //                   </Form.Group>
-// // //                 ))}
-// // //               <Button
-// // //                 onClick={handlePrediction}
-// // //                 style={{
-// // //                   backgroundColor: currentTheme.buttonColor,
-// // //                   color: currentTheme.buttonTextColor,
-// // //                   border: "none",
-// // //                   padding: "10px 20px",
-// // //                   borderRadius: "5px",
-// // //                   cursor: "pointer",
-// // //                 }}
-// // //               >
-// // //                 Get Prediction
-// // //               </Button>
-// // //             </>
-// // //           )}
-// // //         </Form>
-// // //       )}
-
-// // //       {predictionResult && (
-// // //         <div className="mb-4">
-// // //           <h3>Prediction Result</h3>
-// // //           <pre>{JSON.stringify(predictionResult, null, 2)}</pre>
-// // //         </div>
-// // //       )}
-
-// // //       {dataset && selectedColumns.length > 1 && (
-// // //         <DataVisualization
-// // //           data={dataset}
-// // //           selectedColumns={selectedColumns}
-// // //           darkMode={darkMode}
-// // //         />
-// // //       )}
-// // //     </Container>
-// // //   );
-// // // }
-
-// // // export default App;
-
-// // import React, { useState } from "react";
-// // import axios from "axios";
-// // import { Container, Button, Form, Table, Row, Col, Navbar, Nav } from "react-bootstrap";
-// // import DataVisualization from "./components/Visualization";
-// // import "./App.css"; // Custom CSS for animations and themes
-
-// // function App() {
-// //   const [file, setFile] = useState(null);
-// //   const [dataset, setDataset] = useState(null);
-// //   const [selectedColumns, setSelectedColumns] = useState([]);
-// //   const [predictionResult, setPredictionResult] = useState(null);
-// //   const [showPredictionForm, setShowPredictionForm] = useState(false);
-// //   const [inputValues, setInputValues] = useState({});
-// //   const [targetColumn, setTargetColumn] = useState("");
-// //   const [theme, setTheme] = useState("light"); // Default theme
-
-// //   const themes = {
-// //     light: {
-// //       backgroundColor: "#ffffff",
-// //       textColor: "#000000",
-// //       buttonColor: "#4CAF50",
-// //       buttonTextColor: "#ffffff",
-// //       tableHeaderColor: "#f8f9fa",
-// //       navbarColor: "#f8f9fa",
-// //     },
-// //     dark: {
-// //       backgroundColor: "#121212",
-// //       textColor: "#ffffff",
-// //       buttonColor: "#4CAF50",
-// //       buttonTextColor: "#ffffff",
-// //       tableHeaderColor: "#333333",
-// //       navbarColor: "#333333",
-// //     },
-// //     blue: {
-// //       backgroundColor: "#e3f2fd",
-// //       textColor: "#000000",
-// //       buttonColor: "#2196F3",
-// //       buttonTextColor: "#ffffff",
-// //       tableHeaderColor: "#bbdefb",
-// //       navbarColor: "#bbdefb",
-// //     },
-// //     purple: {
-// //       backgroundColor: "#f3e5f5",
-// //       textColor: "#000000",
-// //       buttonColor: "#9C27B0",
-// //       buttonTextColor: "#ffffff",
-// //       tableHeaderColor: "#e1bee7",
-// //       navbarColor: "#e1bee7",
-// //     },
-// //   };
-
-// //   const currentTheme = themes[theme];
-
-// //   const handleFileChange = (e) => setFile(e.target.files[0]);
-
-// //   const handleUpload = async () => {
-// //     if (!file) {
-// //       alert("Please select a file first!");
-// //       return;
-// //     }
-// //     const formData = new FormData();
-// //     formData.append("file", file);
-
-// //     try {
-// //       const response = await axios.post("http://localhost:5000/upload", formData);
-// //       setDataset(response.data);
-// //     } catch (error) {
-// //       console.error("Error uploading file:", error);
-// //     }
-// //   };
-
-// //   const handleColumnSelect = (col) => {
-// //     setSelectedColumns((prev) =>
-// //       prev.includes(col) ? prev.filter((c) => c !== col) : [...prev, col]
-// //     );
-// //   };
-
-// //   const handleShowPredictionForm = () => {
-// //     if (selectedColumns.length < 2) {
-// //       alert("Please select at least two columns for prediction.");
-// //       return;
-// //     }
-// //     setShowPredictionForm(true);
-// //   };
-
-// //   const handleTargetColumnSelect = (e) => {
-// //     setTargetColumn(e.target.value);
-// //     const initialValues = {};
-// //     selectedColumns
-// //       .filter((col) => col !== e.target.value)
-// //       .forEach((col) => {
-// //         initialValues[col] = "";
-// //       });
-// //     setInputValues(initialValues);
-// //   };
-
-// //   const handleInputChange = (col, value) => {
-// //     setInputValues((prev) => ({
-// //       ...prev,
-// //       [col]: value,
-// //     }));
-// //   };
-
-// //   const handlePrediction = async () => {
-// //     try {
-// //       const formattedInputValues = {};
-// //       for (const [key, value] of Object.entries(inputValues)) {
-// //         formattedInputValues[key] = parseFloat(value);
-// //       }
-
-// //       const response = await axios.post("http://127.0.0.1:5001/predict", {
-// //         dataset,
-// //         selectedColumns,
-// //         targetColumn,
-// //         inputValues: formattedInputValues,
-// //       });
-// //       setPredictionResult(response.data);
-// //     } catch (error) {
-// //       console.error("Error fetching prediction:", error);
-// //       alert("Prediction failed. Please check the input values and try again.");
-// //     }
-// //   };
-
-// //   const toggleTheme = (selectedTheme) => setTheme(selectedTheme);
-
-// //   return (
-// //     <div
-// //       style={{
-// //         backgroundColor: currentTheme.backgroundColor,
-// //         color: currentTheme.textColor,
-// //         minHeight: "100vh",
-// //       }}
-// //     >
-// //       {/* Navbar */}
-// //       <Navbar
-// //         expand="lg"
-// //         style={{ backgroundColor: currentTheme.navbarColor, padding: "10px 20px" }}
-// //       >
-// //         <Navbar.Brand href="#home" style={{ color: currentTheme.textColor }}>
-// //           📊 Dataset Analyzer
-// //         </Navbar.Brand>
-// //         <Navbar.Toggle aria-controls="basic-navbar-nav" />
-// //         <Navbar.Collapse id="basic-navbar-nav">
-// //           <Nav className="me-auto">
-// //             <Nav.Link href="#home" style={{ color: currentTheme.textColor }}>
-// //               Home
-// //             </Nav.Link>
-// //             <Nav.Link href="#features" style={{ color: currentTheme.textColor }}>
-// //               Features
-// //             </Nav.Link>
-// //             <Nav.Link href="#upload" style={{ color: currentTheme.textColor }}>
-// //               Upload Dataset
-// //             </Nav.Link>
-// //           </Nav>
-// //           <div>
-// //             <Button
-// //               onClick={() => toggleTheme("light")}
-// //               style={{
-// //                 backgroundColor: themes.light.buttonColor,
-// //                 color: themes.light.buttonTextColor,
-// //                 marginRight: "10px",
-// //               }}
-// //             >
-// //               Light
-// //             </Button>
-// //             <Button
-// //               onClick={() => toggleTheme("dark")}
-// //               style={{
-// //                 backgroundColor: themes.dark.buttonColor,
-// //                 color: themes.dark.buttonTextColor,
-// //                 marginRight: "10px",
-// //               }}
-// //             >
-// //               Dark
-// //             </Button>
-// //             <Button
-// //               onClick={() => toggleTheme("blue")}
-// //               style={{
-// //                 backgroundColor: themes.blue.buttonColor,
-// //                 color: themes.blue.buttonTextColor,
-// //                 marginRight: "10px",
-// //               }}
-// //             >
-// //               Blue
-// //             </Button>
-// //             <Button
-// //               onClick={() => toggleTheme("purple")}
-// //               style={{
-// //                 backgroundColor: themes.purple.buttonColor,
-// //                 color: themes.purple.buttonTextColor,
-// //               }}
-// //             >
-// //               Purple
-// //             </Button>
-// //           </div>
-// //         </Navbar.Collapse>
-// //       </Navbar>
-
-// //       {/* Front Page */}
-// //       <div
-// //         id="home"
-// //         style={{
-// //           padding: "100px 20px",
-// //           textAlign: "center",
-// //           backgroundColor: currentTheme.backgroundColor,
-// //           color: currentTheme.textColor,
-// //         }}
-// //       >
-// //         <h1>Welcome to Dataset Analyzer</h1>
-// //         <p>Analyze and visualize your datasets with ease.</p>
-// //         <Button
-// //           href="#upload"
-// //           style={{
-// //             backgroundColor: currentTheme.buttonColor,
-// //             color: currentTheme.buttonTextColor,
-// //           }}
-// //         >
-// //           Get Started
-// //         </Button>
-// //       </div>
-
-// //       {/* Features Section */}
-// //       <div
-// //         id="features"
-// //         style={{
-// //           padding: "50px 20px",
-// //           backgroundColor: currentTheme.backgroundColor,
-// //           color: currentTheme.textColor,
-// //         }}
-// //       >
-// //         <h2>Features</h2>
-// //         <Row>
-// //           <Col md={4}>
-// //             <h3>📊 Data Visualization</h3>
-// //             <p>Visualize your data with interactive charts.</p>
-// //           </Col>
-// //           <Col md={4}>
-// //             <h3>🔮 Predictions</h3>
-// //             <p>Make predictions using machine learning models.</p>
-// //           </Col>
-// //           <Col md={4}>
-// //             <h3>🎨 Custom Themes</h3>
-// //             <p>Choose from multiple attractive themes.</p>
-// //           </Col>
-// //         </Row>
-// //       </div>
-
-// //       {/* Upload Dataset Section */}
-// //       <Container
-// //         id="upload"
-// //         fluid
-// //         style={{
-// //           padding: "50px 20px",
-// //           backgroundColor: currentTheme.backgroundColor,
-// //           color: currentTheme.textColor,
-// //         }}
-// //       >
-// //         <Row className="mb-4">
-// //           <Col md={8}>
-// //             <Form.Group>
-// //               <Form.Label>Select CSV File</Form.Label>
-// //               <Form.Control
-// //                 type="file"
-// //                 accept=".csv"
-// //                 onChange={handleFileChange}
-// //                 style={{
-// //                   backgroundColor: currentTheme.backgroundColor,
-// //                   color: currentTheme.textColor,
-// //                 }}
-// //               />
-// //             </Form.Group>
-// //           </Col>
-// //           <Col md={4} className="d-flex align-items-end">
-// //             <Button
-// //               onClick={handleUpload}
-// //               className="w-100"
-// //               style={{
-// //                 backgroundColor: currentTheme.buttonColor,
-// //                 color: currentTheme.buttonTextColor,
-// //               }}
-// //             >
-// //               📤 Upload
-// //             </Button>
-// //           </Col>
-// //         </Row>
-
-// //         {dataset && (
-// //           <div className="mb-4">
-// //             <h3>Dataset Preview</h3>
-// //             <div style={{ maxHeight: "400px", overflowY: "auto" }}>
-// //               <Table striped bordered hover>
-// //                 <thead style={{ backgroundColor: currentTheme.tableHeaderColor }}>
-// //                   <tr>
-// //                     {dataset.columns.map((col, index) => (
-// //                       <th key={index}>
-// //                         <Form.Check
-// //                           type="checkbox"
-// //                           label={col}
-// //                           onChange={() => handleColumnSelect(col)}
-// //                           style={{ color: currentTheme.textColor }}
-// //                         />
-// //                       </th>
-// //                     ))}
-// //                   </tr>
-// //                 </thead>
-// //                 <tbody>
-// //                   {dataset.rows.map((row, rowIndex) => (
-// //                     <tr key={rowIndex}>
-// //                       {row.map((cell, colIndex) => (
-// //                         <td key={colIndex}>{cell}</td>
-// //                       )}
-// //                     </tr>
-// //                   ))}
-// //                 </tbody>
-// //               </Table>
-// //             </div>
-// //             <Button
-// //               className="mt-3"
-// //               onClick={handleShowPredictionForm}
-// //               style={{
-// //                 backgroundColor: currentTheme.buttonColor,
-// //                 color: currentTheme.buttonTextColor,
-// //               }}
-// //             >
-// //               Predict
-// //             </Button>
-// //           </div>
-// //         )}
-
-// //         {showPredictionForm && (
-// //           <Form className="mb-4">
-// //             <h4>Select Target Column for Prediction</h4>
-// //             <Form.Select
-// //               onChange={handleTargetColumnSelect}
-// //               style={{
-// //                 backgroundColor: currentTheme.backgroundColor,
-// //                 color: currentTheme.textColor,
-// //               }}
-// //             >
-// //               <option value="">Select a column to predict</option>
-// //               {selectedColumns.map((col, index) => (
-// //                 <option key={index} value={col}>
-// //                   {col}
-// //                 </option>
-// //               ))}
-// //             </Form.Select>
-
-// //             {targetColumn && (
-// //               <>
-// //                 <h4 className="mt-3">Enter Input Values for Prediction</h4>
-// //                 {selectedColumns
-// //                   .filter((col) => col !== targetColumn)
-// //                   .map((col, index) => (
-// //                     <Form.Group key={index} className="mb-2">
-// //                       <Form.Label>{col}</Form.Label>
-// //                       <Form.Control
-// //                         type="text"
-// //                         value={inputValues[col]}
-// //                         onChange={(e) => handleInputChange(col, e.target.value)}
-// //                         style={{
-// //                           backgroundColor: currentTheme.backgroundColor,
-// //                           color: currentTheme.textColor,
-// //                         }}
-// //                       />
-// //                     </Form.Group>
-// //                   ))}
-// //                 <Button
-// //                   onClick={handlePrediction}
-// //                   style={{
-// //                     backgroundColor: currentTheme.buttonColor,
-// //                     color: currentTheme.buttonTextColor,
-// //                   }}
-// //                 >
-// //                   Get Prediction
-// //                 </Button>
-// //               </>
-// //             )}
-// //           </Form>
-// //         )}
-
-// //         {predictionResult && (
-// //           <div className="mb-4">
-// //             <h3>Prediction Result</h3>
-// //             <pre>{JSON.stringify(predictionResult, null, 2)}</pre>
-// //           </div>
-// //         )}
-
-// //         {dataset && selectedColumns.length > 1 && (
-// //           <DataVisualization
-// //             data={dataset}
-// //             selectedColumns={selectedColumns}
-// //             theme={theme}
-// //           />
-// //         )}
-// //       </Container>
-// //     </div>
-// //   );
-// // }
-
-// // export default App;
-
-// import React, { useState } from "react";
-// import axios from "axios";
-// import { Container, Button, Form, Table, Row, Col, Navbar, Nav } from "react-bootstrap";
-// import DataVisualization from "./components/Visualization";
-// import "./App.css"; // Custom CSS for animations and themes
-
-// function App() {
-//   const [file, setFile] = useState(null);
-//   const [dataset, setDataset] = useState(null);
-//   const [selectedColumns, setSelectedColumns] = useState([]);
-//   const [predictionResult, setPredictionResult] = useState(null);
-//   const [showPredictionForm, setShowPredictionForm] = useState(false);
-//   const [inputValues, setInputValues] = useState({});
-//   const [targetColumn, setTargetColumn] = useState("");
-//   const [theme, setTheme] = useState("light"); // Default theme
-
-//   const themes = {
-//     light: {
-//       backgroundColor: "#ffffff",
-//       textColor: "#000000",
-//       buttonColor: "#4CAF50",
-//       buttonTextColor: "#ffffff",
-//       tableHeaderColor: "#f8f9fa",
-//       navbarColor: "#f8f9fa",
-//     },
-//     dark: {
-//       backgroundColor: "#121212",
-//       textColor: "#ffffff",
-//       buttonColor: "#4CAF50",
-//       buttonTextColor: "#ffffff",
-//       tableHeaderColor: "#333333",
-//       navbarColor: "#333333",
-//     },
-//     blue: {
-//       backgroundColor: "#e3f2fd",
-//       textColor: "#000000",
-//       buttonColor: "#2196F3",
-//       buttonTextColor: "#ffffff",
-//       tableHeaderColor: "#bbdefb",
-//       navbarColor: "#bbdefb",
-//     },
-//     purple: {
-//       backgroundColor: "#f3e5f5",
-//       textColor: "#000000",
-//       buttonColor: "#9C27B0",
-//       buttonTextColor: "#ffffff",
-//       tableHeaderColor: "#e1bee7",
-//       navbarColor: "#e1bee7",
-//     },
-//   };
-
-//   const currentTheme = themes[theme];
-
-//   const handleFileChange = (e) => setFile(e.target.files[0]);
-
-//   const handleUpload = async () => {
-//     if (!file) {
-//       alert("Please select a file first!");
-//       return;
-//     }
-//     const formData = new FormData();
-//     formData.append("file", file);
-
-//     try {
-//       const response = await axios.post("http://localhost:5000/upload", formData);
-//       setDataset(response.data);
-//     } catch (error) {
-//       console.error("Error uploading file:", error);
-//     }
-//   };
-
-//   const handleColumnSelect = (col) => {
-//     setSelectedColumns((prev) =>
-//       prev.includes(col) ? prev.filter((c) => c !== col) : [...prev, col]
-//     );
-//   };
-
-//   const handleShowPredictionForm = () => {
-//     if (selectedColumns.length < 2) {
-//       alert("Please select at least two columns for prediction.");
-//       return;
-//     }
-//     setShowPredictionForm(true);
-//   };
-
-//   const handleTargetColumnSelect = (e) => {
-//     setTargetColumn(e.target.value);
-//     const initialValues = {};
-//     selectedColumns
-//       .filter((col) => col !== e.target.value)
-//       .forEach((col) => {
-//         initialValues[col] = "";
-//       });
-//     setInputValues(initialValues);
-//   };
-
-//   const handleInputChange = (col, value) => {
-//     setInputValues((prev) => ({
-//       ...prev,
-//       [col]: value,
-//     }));
-//   };
-
-//   const handlePrediction = async () => {
-//     try {
-//       const formattedInputValues = {};
-//       for (const [key, value] of Object.entries(inputValues)) {
-//         formattedInputValues[key] = parseFloat(value);
-//       }
-
-//       const response = await axios.post("http://127.0.0.1:5001/predict", {
-//         dataset,
-//         selectedColumns,
-//         targetColumn,
-//         inputValues: formattedInputValues,
-//       });
-//       setPredictionResult(response.data);
-//     } catch (error) {
-//       console.error("Error fetching prediction:", error);
-//       alert("Prediction failed. Please check the input values and try again.");
-//     }
-//   };
-
-//   const toggleTheme = (selectedTheme) => setTheme(selectedTheme);
-
-//   return (
-//     <div
-//       style={{
-//         backgroundColor: currentTheme.backgroundColor,
-//         color: currentTheme.textColor,
-//         minHeight: "100vh",
-//       }}
-//     >
-//       {/* Navbar */}
-//       <Navbar
-//         expand="lg"
-//         style={{ backgroundColor: currentTheme.navbarColor, padding: "10px 20px" }}
-//       >
-//         <Navbar.Brand href="#home" style={{ color: currentTheme.textColor }}>
-//           📊 Dataset Analyzer
-//         </Navbar.Brand>
-//         <Navbar.Toggle aria-controls="basic-navbar-nav" />
-//         <Navbar.Collapse id="basic-navbar-nav">
-//           <Nav className="me-auto">
-//             <Nav.Link href="#home" style={{ color: currentTheme.textColor }}>
-//               Home
-//             </Nav.Link>
-//             <Nav.Link href="#features" style={{ color: currentTheme.textColor }}>
-//               Features
-//             </Nav.Link>
-//             <Nav.Link href="#upload" style={{ color: currentTheme.textColor }}>
-//               Upload Dataset
-//             </Nav.Link>
-//           </Nav>
-//           <div>
-//             <Button
-//               onClick={() => toggleTheme("light")}
-//               style={{
-//                 backgroundColor: themes.light.buttonColor,
-//                 color: themes.light.buttonTextColor,
-//                 marginRight: "10px",
-//               }}
-//             >
-//               Light
-//             </Button>
-//             <Button
-//               onClick={() => toggleTheme("dark")}
-//               style={{
-//                 backgroundColor: themes.dark.buttonColor,
-//                 color: themes.dark.buttonTextColor,
-//                 marginRight: "10px",
-//               }}
-//             >
-//               Dark
-//             </Button>
-//             <Button
-//               onClick={() => toggleTheme("blue")}
-//               style={{
-//                 backgroundColor: themes.blue.buttonColor,
-//                 color: themes.blue.buttonTextColor,
-//                 marginRight: "10px",
-//               }}
-//             >
-//               Blue
-//             </Button>
-//             <Button
-//               onClick={() => toggleTheme("purple")}
-//               style={{
-//                 backgroundColor: themes.purple.buttonColor,
-//                 color: themes.purple.buttonTextColor,
-//               }}
-//             >
-//               Purple
-//             </Button>
-//           </div>
-//         </Navbar.Collapse>
-//       </Navbar>
-
-//       {/* Front Page */}
-//       <div
-//         id="home"
-//         style={{
-//           padding: "100px 20px",
-//           textAlign: "center",
-//           backgroundColor: currentTheme.backgroundColor,
-//           color: currentTheme.textColor,
-//         }}
-//       >
-//         <h1>Welcome to Dataset Analyzer</h1>
-//         <p>Analyze and visualize your datasets with ease.</p>
-//         <Button
-//           href="#upload"
-//           style={{
-//             backgroundColor: currentTheme.buttonColor,
-//             color: currentTheme.buttonTextColor,
-//           }}
-//         >
-//           Get Started
-//         </Button>
-//       </div>
-
-//       {/* Features Section */}
-//       <div
-//         id="features"
-//         style={{
-//           padding: "50px 20px",
-//           backgroundColor: currentTheme.backgroundColor,
-//           color: currentTheme.textColor,
-//         }}
-//       >
-//         <h2>Features</h2>
-//         <Row>
-//           <Col md={4}>
-//             <h3>📊 Data Visualization</h3>
-//             <p>Visualize your data with interactive charts.</p>
-//           </Col>
-//           <Col md={4}>
-//             <h3>🔮 Predictions</h3>
-//             <p>Make predictions using machine learning models.</p>
-//           </Col>
-//           <Col md={4}>
-//             <h3>🎨 Custom Themes</h3>
-//             <p>Choose from multiple attractive themes.</p>
-//           </Col>
-//         </Row>
-//       </div>
-
-//       {/* Upload Dataset Section */}
-//       <Container
-//         id="upload"
-//         fluid
-//         style={{
-//           padding: "50px 20px",
-//           backgroundColor: currentTheme.backgroundColor,
-//           color: currentTheme.textColor,
-//         }}
-//       >
-//         <Row className="mb-4">
-//           <Col md={8}>
-//             <Form.Group>
-//               <Form.Label>Select CSV File</Form.Label>
-//               <Form.Control
-//                 type="file"
-//                 accept=".csv"
-//                 onChange={handleFileChange}
-//                 style={{
-//                   backgroundColor: currentTheme.backgroundColor,
-//                   color: currentTheme.textColor,
-//                 }}
-//               />
-//             </Form.Group>
-//           </Col>
-//           <Col md={4} className="d-flex align-items-end">
-//             <Button
-//               onClick={handleUpload}
-//               className="w-100"
-//               style={{
-//                 backgroundColor: currentTheme.buttonColor,
-//                 color: currentTheme.buttonTextColor,
-//               }}
-//             >
-//               📤 Upload
-//             </Button>
-//           </Col>
-//         </Row>
-
-//         {dataset && (
-//           <div className="mb-4">
-//             <h3>Dataset Preview</h3>
-//             <div style={{ maxHeight: "400px", overflowY: "auto" }}>
-//               <Table striped bordered hover>
-//                 <thead style={{ backgroundColor: currentTheme.tableHeaderColor }}>
-//                   <tr>
-//                     {dataset.columns.map((col, index) => (
-//                       <th key={index}>
-//                         <Form.Check
-//                           type="checkbox"
-//                           label={col}
-//                           onChange={() => handleColumnSelect(col)}
-//                           style={{ color: currentTheme.textColor }}
-//                         />
-//                       </th>
-//                     ))}
-//                   </tr>
-//                 </thead>
-//                 <tbody>
-//                   {dataset.rows.map((row, rowIndex) => (
-//                     <tr key={rowIndex}>
-//                       {row.map((cell, colIndex) => (
-//                         <td key={colIndex}>{cell}</td>
-//                       ))}
-//                     </tr>
-//                   ))}
-//                 </tbody>
-//               </Table>
-//             </div>
-//             <Button
-//               className="mt-3"
-//               onClick={handleShowPredictionForm}
-//               style={{
-//                 backgroundColor: currentTheme.buttonColor,
-//                 color: currentTheme.buttonTextColor,
-//               }}
-//             >
-//               Predict
-//             </Button>
-//           </div>
-//         )}
-
-//         {showPredictionForm && (
-//           <Form className="mb-4">
-//             <h4>Select Target Column for Prediction</h4>
-//             <Form.Select
-//               onChange={handleTargetColumnSelect}
-//               style={{
-//                 backgroundColor: currentTheme.backgroundColor,
-//                 color: currentTheme.textColor,
-//               }}
-//             >
-//               <option value="">Select a column to predict</option>
-//               {selectedColumns.map((col, index) => (
-//                 <option key={index} value={col}>
-//                   {col}
-//                 </option>
-//               ))}
-//             </Form.Select>
-
-//             {targetColumn && (
-//               <>
-//                 <h4 className="mt-3">Enter Input Values for Prediction</h4>
-//                 {selectedColumns
-//                   .filter((col) => col !== targetColumn)
-//                   .map((col, index) => (
-//                     <Form.Group key={index} className="mb-2">
-//                       <Form.Label>{col}</Form.Label>
-//                       <Form.Control
-//                         type="text"
-//                         value={inputValues[col]}
-//                         onChange={(e) => handleInputChange(col, e.target.value)}
-//                         style={{
-//                           backgroundColor: currentTheme.backgroundColor,
-//                           color: currentTheme.textColor,
-//                         }}
-//                       />
-//                     </Form.Group>
-//                   ))}
-//                 <Button
-//                   onClick={handlePrediction}
-//                   style={{
-//                     backgroundColor: currentTheme.buttonColor,
-//                     color: currentTheme.buttonTextColor,
-//                   }}
-//                 >
-//                   Get Prediction
-//                 </Button>
-//               </>
-//             )}
-//           </Form>
-//         )}
-
-//         {predictionResult && (
-//           <div className="mb-4">
-//             <h3>Prediction Result</h3>
-//             <pre>{JSON.stringify(predictionResult, null, 2)}</pre>
-//           </div>
-//         )}
-
-//         {dataset && selectedColumns.length > 1 && (
-//           <DataVisualization
-//             data={dataset}
-//             selectedColumns={selectedColumns}
-//             theme={theme}
-//           />
-//         )}
-//       </Container>
-//     </div>
-//   );
-// }
-
-// export default App;
-
-
 import React, { useState } from "react";
 import axios from "axios";
-import { Container, Button, Form, Table, Row, Col, Navbar, Nav } from "react-bootstrap";
+import { Container, Button, Form, Table, Row, Col, Navbar, Nav, Card, Badge } from "react-bootstrap";
 import DataVisualization from "./components/Visualization";
-import "./App.css"; // Custom CSS for animations and themes
+import "./App.css";
 
 function App() {
   const [file, setFile] = useState(null);
@@ -1104,52 +12,68 @@ function App() {
   const [showPredictionForm, setShowPredictionForm] = useState(false);
   const [inputValues, setInputValues] = useState({});
   const [targetColumn, setTargetColumn] = useState("");
-  const [theme, setTheme] = useState("light"); // Default theme
+  const [theme, setTheme] = useState("light");
 
   const themes = {
     light: {
-      backgroundColor: "#ffffff",
-      textColor: "#000000",
-      buttonColor: "grey",
+      backgroundColor: "#f8f9fa",
+      textColor: "#2c3e50",
+      buttonColor: "#667eea",
       buttonTextColor: "#ffffff",
-      tableHeaderColor: "#f8f9fa",
-      navbarColor: "#f8f9fa",
+      tableHeaderColor: "#667eea",
+      navbarColor: "#ffffff",
+      cardBackground: "#ffffff",
+      accentColor: "#764ba2",
+      gradientFrom: "#667eea",
+      gradientTo: "#764ba2",
     },
     dark: {
-      backgroundColor: "#121212",
-      textColor: "#ffffff",
-      buttonColor: "black",
+      backgroundColor: "#0f0f23",
+      textColor: "#e0e0e0",
+      buttonColor: "#667eea",
       buttonTextColor: "#ffffff",
-      tableHeaderColor: "#333333",
-      navbarColor: "#333333",
+      tableHeaderColor: "#1a1a3e",
+      navbarColor: "#1a1a3e",
+      cardBackground: "#1a1a3e",
+      accentColor: "#764ba2",
+      gradientFrom: "#667eea",
+      gradientTo: "#764ba2",
     },
     blue: {
-      backgroundColor: "#e3f2fd",
-      textColor: "#000000",
+      backgroundColor: "#e8f4f8",
+      textColor: "#1e3a5f",
       buttonColor: "#2196F3",
       buttonTextColor: "#ffffff",
-      tableHeaderColor: "#bbdefb",
-      navbarColor: "#bbdefb",
+      tableHeaderColor: "#42a5f5",
+      navbarColor: "#ffffff",
+      cardBackground: "#ffffff",
+      accentColor: "#1976d2",
+      gradientFrom: "#2196F3",
+      gradientTo: "#00bcd4",
     },
     purple: {
-      backgroundColor: "#f3e5f5",
-      textColor: "#000000",
+      backgroundColor: "#f5f0f8",
+      textColor: "#4a148c",
       buttonColor: "#9C27B0",
       buttonTextColor: "#ffffff",
-      tableHeaderColor: "#e1bee7",
-      navbarColor: "#e1bee7",
+      tableHeaderColor: "#ba68c8",
+      navbarColor: "#ffffff",
+      cardBackground: "#ffffff",
+      accentColor: "#7b1fa2",
+      gradientFrom: "#9C27B0",
+      gradientTo: "#e91e63",
     },
     lightGreen: {
-      // backgroundColor: "#333",
-      // textColor: "#ffffff",
-      // buttonColor: "#4CAF50",
-      // buttonTextColor: "#ffffff",
-      tableHeaderColor: "#4CAF50",
-      navbarColor: "#4CAF50",
-      backgroundColor: "#E8F5E9",
-      textColor: "#000",
+      backgroundColor: "#f1f8f4",
+      textColor: "#1b5e20",
       buttonColor: "#4CAF50",
       buttonTextColor: "#fff",
+      tableHeaderColor: "#66bb6a",
+      navbarColor: "#ffffff",
+      cardBackground: "#ffffff",
+      accentColor: "#388e3c",
+      gradientFrom: "#4CAF50",
+      gradientTo: "#8bc34a",
     },
   };
 
@@ -1233,130 +157,306 @@ function App() {
         backgroundColor: currentTheme.backgroundColor,
         color: currentTheme.textColor,
         minHeight: "100vh",
+        transition: "all 0.3s ease",
       }}
     >
-      {/* Navbar */}
+      {/* Enhanced Navbar */}
       <Navbar
         expand="lg"
-        style={{ backgroundColor: currentTheme.navbarColor, padding: "10px 20px" }}
+        style={{
+          backgroundColor: currentTheme.navbarColor,
+          padding: "15px 30px",
+          boxShadow: "0 2px 20px rgba(0,0,0,0.1)",
+          backdropFilter: "blur(10px)",
+        }}
       >
-        <Navbar.Brand href="#home" style={{ color: currentTheme.textColor }}>
+        <Navbar.Brand
+          href="#home"
+          style={{
+            color: currentTheme.textColor,
+            fontSize: "1.5rem",
+            fontWeight: "700",
+            letterSpacing: "-0.5px",
+          }}
+        >
           📊 Dataset Analyzer
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            <Nav.Link href="#home" style={{ color: currentTheme.textColor }}>
+            <Nav.Link
+              href="#home"
+              style={{
+                color: currentTheme.textColor,
+                fontWeight: "500",
+                margin: "0 10px",
+                transition: "all 0.3s ease",
+              }}
+            >
               Home
             </Nav.Link>
-            <Nav.Link href="#features" style={{ color: currentTheme.textColor }}>
+            <Nav.Link
+              href="#features"
+              style={{
+                color: currentTheme.textColor,
+                fontWeight: "500",
+                margin: "0 10px",
+                transition: "all 0.3s ease",
+              }}
+            >
               Features
             </Nav.Link>
-            <Nav.Link href="#upload" style={{ color: currentTheme.textColor }}>
+            <Nav.Link
+              href="#upload"
+              style={{
+                color: currentTheme.textColor,
+                fontWeight: "500",
+                margin: "0 10px",
+                transition: "all 0.3s ease",
+              }}
+            >
               Upload Dataset
             </Nav.Link>
           </Nav>
-          <div>
-            <Button
-              onClick={() => toggleTheme("light")}
-              style={{
-                backgroundColor: themes.light.buttonColor,
-                color: themes.light.buttonTextColor,
-                marginRight: "10px",
-              }}
-            >
-              Light
-            </Button>
-            <Button
-              onClick={() => toggleTheme("dark")}
-              style={{
-                backgroundColor: themes.dark.buttonColor,
-                color: themes.dark.buttonTextColor,
-                marginRight: "10px",
-              }}
-            >
-              Dark
-            </Button>
-            <Button
-              onClick={() => toggleTheme("blue")}
-              style={{
-                backgroundColor: themes.blue.buttonColor,
-                color: themes.blue.buttonTextColor,
-                marginRight: "10px",
-              }}
-            >
-              Blue
-            </Button>
-            <Button
-              onClick={() => toggleTheme("purple")}
-              style={{
-                backgroundColor: themes.purple.buttonColor,
-                color: themes.purple.buttonTextColor,
-                marginRight: "10px",
-              }}
-            >
-              Purple
-            </Button>
-            <Button
-              onClick={() => toggleTheme("lightGreen")}
-              style={{
-                backgroundColor: themes.lightGreen.buttonColor,
-                color: themes.lightGreen.buttonTextColor,
-              }}
-            >
-              Light Green
-            </Button>
+          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+            {Object.keys(themes).map((themeName) => (
+              <Button
+                key={themeName}
+                onClick={() => toggleTheme(themeName)}
+                style={{
+                  backgroundColor: themes[themeName].buttonColor,
+                  color: themes[themeName].buttonTextColor,
+                  border: "none",
+                  borderRadius: "20px",
+                  padding: "6px 16px",
+                  fontSize: "0.85rem",
+                  fontWeight: "600",
+                  textTransform: "capitalize",
+                  transition: "all 0.3s ease",
+                  transform: theme === themeName ? "scale(1.05)" : "scale(1)",
+                  boxShadow: theme === themeName ? "0 4px 15px rgba(0,0,0,0.2)" : "none",
+                }}
+              >
+                {themeName === "lightGreen" ? "Green" : themeName}
+              </Button>
+            ))}
           </div>
         </Navbar.Collapse>
       </Navbar>
 
-      {/* Front Page */}
+      {/* Hero Section */}
       <div
         id="home"
         style={{
-          padding: "100px 20px",
+          padding: "120px 20px 100px",
           textAlign: "center",
-          backgroundColor: currentTheme.backgroundColor,
-          color: currentTheme.textColor,
+          background: `linear-gradient(135deg, ${currentTheme.gradientFrom} 0%, ${currentTheme.gradientTo} 100%)`,
+          color: "#ffffff",
+          position: "relative",
+          overflow: "hidden",
         }}
       >
-        <h1>Welcome to Dataset Analyzer</h1>
-        <p>Analyze and visualize your datasets with ease.</p>
-        <Button
-          href="#upload"
-          style={{
-            backgroundColor: currentTheme.buttonColor,
-            color: currentTheme.buttonTextColor,
-          }}
-        >
-          Get Started
-        </Button>
+        <div style={{ position: "relative", zIndex: 2 }}>
+          <h1
+            style={{
+              fontSize: "3.5rem",
+              fontWeight: "800",
+              marginBottom: "20px",
+              letterSpacing: "-1px",
+              textShadow: "0 2px 10px rgba(0,0,0,0.2)",
+            }}
+          >
+            Welcome to Dataset Analyzer
+          </h1>
+          <p style={{ fontSize: "1.3rem", marginBottom: "30px", opacity: 0.95 }}>
+            Analyze and visualize your datasets with ease and intelligence
+          </p>
+          <Button
+            href="#upload"
+            style={{
+              backgroundColor: "rgba(255,255,255,0.2)",
+              color: "#ffffff",
+              border: "2px solid #ffffff",
+              borderRadius: "30px",
+              padding: "12px 40px",
+              fontSize: "1.1rem",
+              fontWeight: "600",
+              backdropFilter: "blur(10px)",
+              transition: "all 0.3s ease",
+            }}
+            onMouseOver={(e) => {
+              e.target.style.backgroundColor = "#ffffff";
+              e.target.style.color = currentTheme.buttonColor;
+            }}
+            onMouseOut={(e) => {
+              e.target.style.backgroundColor = "rgba(255,255,255,0.2)";
+              e.target.style.color = "#ffffff";
+            }}
+          >
+            Get Started →
+          </Button>
+        </div>
       </div>
 
       {/* Features Section */}
       <div
         id="features"
         style={{
-          padding: "50px 20px",
+          padding: "80px 20px",
           backgroundColor: currentTheme.backgroundColor,
           color: currentTheme.textColor,
         }}
       >
-        <h2>Features</h2>
-        <Row>
-          <Col md={4}>
-            <h3>📊 Data Visualization</h3>
-            <p>Visualize your data with interactive charts.</p>
-          </Col>
-          <Col md={4}>
-            <h3>🔮 Predictions</h3>
-            <p>Make predictions using machine learning models.</p>
-          </Col>
-          <Col md={4}>
-            <h3>🎨 Custom Themes</h3>
-            <p>Choose from multiple attractive themes.</p>
-          </Col>
-        </Row>
+        <Container>
+          <h2
+            style={{
+              textAlign: "center",
+              fontSize: "2.5rem",
+              fontWeight: "700",
+              marginBottom: "60px",
+              color: currentTheme.textColor,
+            }}
+          >
+            Powerful Features
+          </h2>
+          <Row>
+            <Col md={4} className="mb-4">
+              <Card
+                style={{
+                  backgroundColor: currentTheme.cardBackground,
+                  border: "none",
+                  borderRadius: "20px",
+                  padding: "30px",
+                  height: "100%",
+                  boxShadow: "0 10px 40px rgba(0,0,0,0.08)",
+                  transition: "all 0.3s ease",
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.transform = "translateY(-10px)";
+                  e.currentTarget.style.boxShadow = "0 15px 50px rgba(0,0,0,0.15)";
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow = "0 10px 40px rgba(0,0,0,0.08)";
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: "3rem",
+                    marginBottom: "20px",
+                    textAlign: "center",
+                  }}
+                >
+                  📊
+                </div>
+                <h3
+                  style={{
+                    fontSize: "1.5rem",
+                    fontWeight: "700",
+                    marginBottom: "15px",
+                    color: currentTheme.textColor,
+                    textAlign: "center",
+                  }}
+                >
+                  Data Visualization
+                </h3>
+                <p style={{ textAlign: "center", color: currentTheme.textColor, opacity: 0.8 }}>
+                  Visualize your data with interactive and beautiful charts that bring insights to life
+                </p>
+              </Card>
+            </Col>
+            <Col md={4} className="mb-4">
+              <Card
+                style={{
+                  backgroundColor: currentTheme.cardBackground,
+                  border: "none",
+                  borderRadius: "20px",
+                  padding: "30px",
+                  height: "100%",
+                  boxShadow: "0 10px 40px rgba(0,0,0,0.08)",
+                  transition: "all 0.3s ease",
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.transform = "translateY(-10px)";
+                  e.currentTarget.style.boxShadow = "0 15px 50px rgba(0,0,0,0.15)";
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow = "0 10px 40px rgba(0,0,0,0.08)";
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: "3rem",
+                    marginBottom: "20px",
+                    textAlign: "center",
+                  }}
+                >
+                  🔮
+                </div>
+                <h3
+                  style={{
+                    fontSize: "1.5rem",
+                    fontWeight: "700",
+                    marginBottom: "15px",
+                    color: currentTheme.textColor,
+                    textAlign: "center",
+                  }}
+                >
+                  AI Predictions
+                </h3>
+                <p style={{ textAlign: "center", color: currentTheme.textColor, opacity: 0.8 }}>
+                  Make accurate predictions using advanced machine learning models
+                </p>
+              </Card>
+            </Col>
+            <Col md={4} className="mb-4">
+              <Card
+                style={{
+                  backgroundColor: currentTheme.cardBackground,
+                  border: "none",
+                  borderRadius: "20px",
+                  padding: "30px",
+                  height: "100%",
+                  boxShadow: "0 10px 40px rgba(0,0,0,0.08)",
+                  transition: "all 0.3s ease",
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.transform = "translateY(-10px)";
+                  e.currentTarget.style.boxShadow = "0 15px 50px rgba(0,0,0,0.15)";
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow = "0 10px 40px rgba(0,0,0,0.08)";
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: "3rem",
+                    marginBottom: "20px",
+                    textAlign: "center",
+                  }}
+                >
+                  🎨
+                </div>
+                <h3
+                  style={{
+                    fontSize: "1.5rem",
+                    fontWeight: "700",
+                    marginBottom: "15px",
+                    color: currentTheme.textColor,
+                    textAlign: "center",
+                  }}
+                >
+                  Custom Themes
+                </h3>
+                <p style={{ textAlign: "center", color: currentTheme.textColor, opacity: 0.8 }}>
+                  Choose from multiple attractive themes to match your style
+                </p>
+              </Card>
+            </Col>
+          </Row>
+        </Container>
       </div>
 
       {/* Upload Dataset Section */}
@@ -1364,125 +464,300 @@ function App() {
         id="upload"
         fluid
         style={{
-          padding: "50px 20px",
+          padding: "80px 40px",
           backgroundColor: currentTheme.backgroundColor,
           color: currentTheme.textColor,
         }}
       >
-        <Row className="mb-4">
-          <Col md={8}>
-            <Form.Group>
-              <Form.Label>Select CSV File</Form.Label>
-              <Form.Control
-                type="file"
-                accept=".csv"
-                onChange={handleFileChange}
+        <Card
+          style={{
+            backgroundColor: currentTheme.cardBackground,
+            border: "none",
+            borderRadius: "20px",
+            padding: "40px",
+            marginBottom: "30px",
+            boxShadow: "0 10px 40px rgba(0,0,0,0.08)",
+          }}
+        >
+          <h3
+            style={{
+              fontSize: "1.8rem",
+              fontWeight: "700",
+              marginBottom: "30px",
+              color: currentTheme.textColor,
+            }}
+          >
+            Upload Your Dataset
+          </h3>
+          <Row className="mb-4">
+            <Col md={8}>
+              <Form.Group>
+                <Form.Label style={{ fontWeight: "600", marginBottom: "10px" }}>
+                  Select CSV File
+                </Form.Label>
+                <Form.Control
+                  type="file"
+                  accept=".csv"
+                  onChange={handleFileChange}
+                  style={{
+                    backgroundColor: currentTheme.backgroundColor,
+                    color: currentTheme.textColor,
+                    border: `2px dashed ${currentTheme.buttonColor}`,
+                    borderRadius: "12px",
+                    padding: "15px",
+                    transition: "all 0.3s ease",
+                  }}
+                />
+              </Form.Group>
+            </Col>
+            <Col md={4} className="d-flex align-items-end">
+              <Button
+                onClick={handleUpload}
+                className="w-100"
                 style={{
-                  backgroundColor: currentTheme.backgroundColor,
-                  color: currentTheme.textColor,
+                  background: `linear-gradient(135deg, ${currentTheme.gradientFrom} 0%, ${currentTheme.gradientTo} 100%)`,
+                  color: currentTheme.buttonTextColor,
+                  border: "none",
+                  borderRadius: "12px",
+                  padding: "15px",
+                  fontSize: "1rem",
+                  fontWeight: "600",
+                  transition: "all 0.3s ease",
                 }}
-              />
-            </Form.Group>
-          </Col>
-          <Col md={4} className="d-flex align-items-end">
-            <Button
-              onClick={handleUpload}
-              className="w-100"
+              >
+                📤 Upload Dataset
+              </Button>
+            </Col>
+          </Row>
+        </Card>
+
+        {selectedColumns.length > 0 && (
+          <div style={{ textAlign: "center", marginBottom: "30px" }}>
+            <Badge
+              bg="secondary"
               style={{
-                backgroundColor: currentTheme.buttonColor,
-                color: currentTheme.buttonTextColor,
+                fontSize: "1rem",
+                padding: "10px 20px",
+                borderRadius: "20px",
+                marginRight: "15px",
               }}
             >
-              📤 Upload
-            </Button>
-          </Col>
-        </Row>
-        <div style={{textAlign:"center"}}>
-        <Button
-              className="mt-3"
+              {selectedColumns.length} columns selected
+            </Badge>
+            <Button
               onClick={handleShowPredictionForm}
               style={{
-                backgroundColor: currentTheme.buttonColor,
+                background: `linear-gradient(135deg, ${currentTheme.gradientFrom} 0%, ${currentTheme.gradientTo} 100%)`,
                 color: currentTheme.buttonTextColor,
-                marginBottom:20,
-                width:200,
+                border: "none",
+                borderRadius: "25px",
+                padding: "12px 35px",
+                fontSize: "1rem",
+                fontWeight: "600",
+                transition: "all 0.3s ease",
               }}
             >
-              Predict
+              🔮 Make Prediction
             </Button>
-            </div>
+          </div>
+        )}
+
         {showPredictionForm && (
-          <Form className="mb-4">
-            <h4>Select Target Column for Prediction</h4>
-            <Form.Select
-              onChange={handleTargetColumnSelect}
+          <Card
+            style={{
+              backgroundColor: currentTheme.cardBackground,
+              border: "none",
+              borderRadius: "20px",
+              padding: "40px",
+              marginBottom: "30px",
+              boxShadow: "0 10px 40px rgba(0,0,0,0.08)",
+            }}
+          >
+            <h4
               style={{
-                backgroundColor: currentTheme.backgroundColor,
+                fontSize: "1.5rem",
+                fontWeight: "700",
+                marginBottom: "25px",
                 color: currentTheme.textColor,
               }}
             >
-              <option value="">Select a column to predict</option>
-              {selectedColumns.map((col, index) => (
-                <option key={index} value={col}>
-                  {col}
-                </option>
-              ))}
-            </Form.Select>
+              Configure Prediction
+            </h4>
+            <Form.Group className="mb-4">
+              <Form.Label style={{ fontWeight: "600", marginBottom: "10px" }}>
+                Select Target Column
+              </Form.Label>
+              <Form.Select
+                onChange={handleTargetColumnSelect}
+                style={{
+                  backgroundColor: currentTheme.backgroundColor,
+                  color: currentTheme.textColor,
+                  border: `2px solid ${currentTheme.buttonColor}`,
+                  borderRadius: "12px",
+                  padding: "12px",
+                  fontSize: "1rem",
+                }}
+              >
+                <option value="">Choose a column to predict</option>
+                {selectedColumns.map((col, index) => (
+                  <option key={index} value={col}>
+                    {col}
+                  </option>
+                ))}
+              </Form.Select>
+            </Form.Group>
 
             {targetColumn && (
               <>
-                <h4 className="mt-3">Enter Input Values for Prediction</h4>
-                {selectedColumns
-                  .filter((col) => col !== targetColumn)
-                  .map((col, index) => (
-                    <Form.Group key={index} className="mb-2">
-                      <Form.Label>{col}</Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={inputValues[col]}
-                        onChange={(e) => handleInputChange(col, e.target.value)}
-                        style={{
-                          backgroundColor: currentTheme.backgroundColor,
-                          color: currentTheme.textColor,
-                        }}
-                      />
-                    </Form.Group>
-                  ))}
-                <Button
-                  onClick={handlePrediction}
+                <h5
                   style={{
-                    backgroundColor: currentTheme.buttonColor,
-                    color: currentTheme.buttonTextColor,
+                    fontSize: "1.2rem",
+                    fontWeight: "600",
+                    marginTop: "30px",
+                    marginBottom: "20px",
+                    color: currentTheme.textColor,
                   }}
                 >
-                  Get Prediction
-                </Button>
+                  Enter Input Values
+                </h5>
+                <Row>
+                  {selectedColumns
+                    .filter((col) => col !== targetColumn)
+                    .map((col, index) => (
+                      <Col md={6} key={index} className="mb-3">
+                        <Form.Group>
+                          <Form.Label style={{ fontWeight: "600", fontSize: "0.9rem" }}>
+                            {col}
+                          </Form.Label>
+                          <Form.Control
+                            type="text"
+                            value={inputValues[col]}
+                            onChange={(e) => handleInputChange(col, e.target.value)}
+                            style={{
+                              backgroundColor: currentTheme.backgroundColor,
+                              color: currentTheme.textColor,
+                              border: `1px solid ${currentTheme.buttonColor}`,
+                              borderRadius: "10px",
+                              padding: "12px",
+                            }}
+                            placeholder={`Enter ${col}`}
+                          />
+                        </Form.Group>
+                      </Col>
+                    ))}
+                </Row>
+                <div style={{ textAlign: "center", marginTop: "30px" }}>
+                  <Button
+                    onClick={handlePrediction}
+                    style={{
+                      background: `linear-gradient(135deg, ${currentTheme.gradientFrom} 0%, ${currentTheme.gradientTo} 100%)`,
+                      color: currentTheme.buttonTextColor,
+                      border: "none",
+                      borderRadius: "25px",
+                      padding: "12px 40px",
+                      fontSize: "1.1rem",
+                      fontWeight: "600",
+                    }}
+                  >
+                    Get Prediction →
+                  </Button>
+                </div>
               </>
             )}
-          </Form>
+          </Card>
         )}
 
         {predictionResult && (
-          <div className="mb-4">
-            <h3>Prediction Result</h3>
-            <pre>{JSON.stringify(predictionResult, null, 2)}</pre>
-          </div>
+          <Card
+            style={{
+              backgroundColor: currentTheme.cardBackground,
+              border: "none",
+              borderRadius: "20px",
+              padding: "40px",
+              marginBottom: "30px",
+              boxShadow: "0 10px 40px rgba(0,0,0,0.08)",
+            }}
+          >
+            <h3
+              style={{
+                fontSize: "1.8rem",
+                fontWeight: "700",
+                marginBottom: "20px",
+                color: currentTheme.buttonColor,
+              }}
+            >
+              🎯 Prediction Result
+            </h3>
+            <pre
+              style={{
+                backgroundColor: currentTheme.backgroundColor,
+                color: currentTheme.textColor,
+                padding: "25px",
+                borderRadius: "12px",
+                fontSize: "1rem",
+                border: `1px solid ${currentTheme.buttonColor}`,
+              }}
+            >
+              {JSON.stringify(predictionResult, null, 2)}
+            </pre>
+          </Card>
         )}
+
         {dataset && (
-          <div className="mb-4">
-            
-            <h3>Dataset Preview</h3>
-            <div style={{ maxHeight: "400px", overflowY: "auto" }}>
-              <Table striped bordered hover>
-                <thead style={{ backgroundColor: currentTheme.tableHeaderColor }}>
+          <Card
+            style={{
+              backgroundColor: currentTheme.cardBackground,
+              border: "none",
+              borderRadius: "20px",
+              padding: "40px",
+              marginBottom: "30px",
+              boxShadow: "0 10px 40px rgba(0,0,0,0.08)",
+            }}
+          >
+            <h3
+              style={{
+                fontSize: "1.8rem",
+                fontWeight: "700",
+                marginBottom: "25px",
+                color: currentTheme.textColor,
+              }}
+            >
+              Dataset Preview
+            </h3>
+            <div
+              style={{
+                maxHeight: "500px",
+                overflowY: "auto",
+                borderRadius: "12px",
+                border: `1px solid ${currentTheme.buttonColor}`,
+              }}
+            >
+              <Table striped hover style={{ marginBottom: 0 }}>
+                <thead
+                  style={{
+                    backgroundColor: currentTheme.tableHeaderColor,
+                    color: "#ffffff",
+                    position: "sticky",
+                    top: 0,
+                    zIndex: 10,
+                  }}
+                >
                   <tr>
                     {dataset.columns.map((col, index) => (
-                      <th key={index}>
+                      <th
+                        key={index}
+                        style={{
+                          padding: "15px",
+                          fontWeight: "600",
+                          fontSize: "0.95rem",
+                        }}
+                      >
                         <Form.Check
                           type="checkbox"
                           label={col}
                           onChange={() => handleColumnSelect(col)}
-                          style={{ color: currentTheme.textColor }}
+                          checked={selectedColumns.includes(col)}
+                          style={{ color: "#ffffff" }}
                         />
                       </th>
                     ))}
@@ -1492,27 +767,49 @@ function App() {
                   {dataset.rows.map((row, rowIndex) => (
                     <tr key={rowIndex}>
                       {row.map((cell, colIndex) => (
-                        <td key={colIndex}>{cell}</td>
+                        <td
+                          key={colIndex}
+                          style={{
+                            padding: "12px 15px",
+                            color: currentTheme.textColor,
+                          }}
+                        >
+                          {cell}
+                        </td>
                       ))}
                     </tr>
                   ))}
                 </tbody>
               </Table>
             </div>
-            
-          </div>
+          </Card>
         )}
-
-        
 
         {dataset && selectedColumns.length >= 1 && (
-          <DataVisualization
-            data={dataset}
-            selectedColumns={selectedColumns}
-            theme={theme}
-          />
+          <div style={{ marginTop: "30px" }}>
+            <DataVisualization
+              data={dataset}
+              selectedColumns={selectedColumns}
+              theme={theme}
+            />
+          </div>
         )}
       </Container>
+
+      {/* Footer */}
+      <div
+        style={{
+          padding: "40px 20px",
+          textAlign: "center",
+          backgroundColor: currentTheme.navbarColor,
+          color: currentTheme.textColor,
+          borderTop: `1px solid ${currentTheme.buttonColor}`,
+        }}
+      >
+        <p style={{ margin: 0, fontSize: "0.9rem", opacity: 0.8 }}>
+          © 2024 Dataset Analyzer. Powered by AI and Data Science.
+        </p>
+      </div>
     </div>
   );
 }
