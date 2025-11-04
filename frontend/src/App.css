@@ -1,43 +1,184 @@
-.App {
-  text-align: center;
+/* Global Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+/* Smooth Scrolling */
+html {
+  scroll-behavior: smooth;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+/* Button Hover Effects */
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
 }
 
-.App-link {
-  color: #61dafb;
+.btn:active {
+  transform: translateY(0);
 }
 
-@keyframes App-logo-spin {
+/* Card Animations */
+.card {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
   from {
-    transform: rotate(0deg);
+    opacity: 0;
+    transform: translateY(30px);
   }
   to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Navbar Animation */
+.navbar {
+  animation: slideDown 0.5s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Nav Links Hover Effect */
+.nav-link {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: currentColor;
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+
+.nav-link:hover::after {
+  width: 80%;
+}
+
+/* Table Styles */
+.table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.table tbody tr {
+  transition: all 0.3s ease;
+}
+
+.table tbody tr:hover {
+  background-color: rgba(102, 126, 234, 0.05) !important;
+  transform: scale(1.01);
+}
+
+/* Form Control Styles */
+.form-control:focus,
+.form-select:focus {
+  box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25) !important;
+  border-color: #667eea !important;
+}
+
+.form-control,
+.form-select {
+  transition: all 0.3s ease;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #667eea;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #764ba2;
+}
+
+/* Dark Theme Scrollbar */
+[style*="background-color: #0f0f23"] ::-webkit-scrollbar-track {
+  background: #1a1a3e;
+}
+
+/* Badge Animation */
+.badge {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* File Input Hover Effect */
+.form-control[type="file"] {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.form-control[type="file"]:hover {
+  border-color: #667eea !important;
+  background-color: rgba(102, 126, 234, 0.05) !important;
+}
+
+/* Loading Animation */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
     transform: rotate(360deg);
   }
 }
 
-/* App.css */
+.loading {
+  animation: spin 1s linear infinite;
+}
+
+/* Fade In Animation for Sections */
+.fade-in {
+  animation: fadeIn 0.8s ease-in;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -47,38 +188,173 @@
   }
 }
 
-@keyframes slideIn {
+/* Gradient Text Animation */
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.gradient-text {
+  background: linear-gradient(45deg, #667eea, #764ba2, #667eea);
+  background-size: 200% 200%;
+  animation: gradientShift 3s ease infinite;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Hero Section Animation */
+#home {
+  animation: fadeIn 1s ease-in;
+}
+
+#home h1 {
+  animation: slideInFromTop 0.8s ease-out;
+}
+
+#home p {
+  animation: slideInFromTop 1s ease-out;
+}
+
+@keyframes slideInFromTop {
   from {
-    transform: translateY(50px);
     opacity: 0;
+    transform: translateY(-50px);
   }
   to {
-    transform: translateY(0);
     opacity: 1;
+    transform: translateY(0);
   }
 }
 
-/* Front Page Animation */
-#home {
-  animation: fadeIn 1s ease-in-out;
+/* Feature Cards Staggered Animation */
+#features .col-md-4:nth-child(1) .card {
+  animation-delay: 0.1s;
 }
 
-/* Features Section Animation */
-#features {
-  animation: slideIn 1s ease-in-out;
+#features .col-md-4:nth-child(2) .card {
+  animation-delay: 0.2s;
 }
 
-/* Button Hover Effect */
-Button {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+#features .col-md-4:nth-child(3) .card {
+  animation-delay: 0.3s;
 }
 
-Button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+/* Checkbox Custom Styling */
+.form-check-input:checked {
+  background-color: #667eea;
+  border-color: #667eea;
 }
 
-/* Navbar Animation */
-Navbar {
-  animation: slideIn 0.5s ease-in-out;
+.form-check-input:focus {
+  box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+}
+
+/* Table Header Sticky Enhancement */
+.table thead th {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Pre Tag Styling */
+pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: 'Courier New', monospace;
+  line-height: 1.6;
+}
+
+/* Responsive Improvements */
+@media (max-width: 768px) {
+  #home h1 {
+    font-size: 2rem !important;
+  }
+  
+  #home p {
+    font-size: 1rem !important;
+  }
+  
+  .navbar-brand {
+    font-size: 1.2rem !important;
+  }
+  
+  #features h2 {
+    font-size: 2rem !important;
+  }
+}
+
+/* Button Group Spacing */
+.navbar-collapse > div {
+  margin-top: 10px;
+}
+
+@media (min-width: 992px) {
+  .navbar-collapse > div {
+    margin-top: 0;
+  }
+}
+
+/* Focus Visible for Accessibility */
+*:focus-visible {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}
+
+/* Container Animations */
+.container-fluid {
+  animation: fadeIn 0.8s ease-in;
+}
+
+/* Theme Transition */
+body, div, nav, card {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Enhanced Shadow on Scroll */
+.navbar.scrolled {
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Badge Hover Effect */
+.badge {
+  transition: all 0.3s ease;
+}
+
+.badge:hover {
+  transform: scale(1.1);
+}
+
+/* Input Placeholder Styling */
+::placeholder {
+  color: rgba(0, 0, 0, 0.4);
+  opacity: 1;
+}
+
+:-ms-input-placeholder {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+::-ms-input-placeholder {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+/* Dark Theme Placeholder */
+[style*="background-color: #0f0f23"] ::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Row Animation */
+.row {
+  animation: fadeIn 0.6s ease-in;
+}
+
+/* Footer Styling */
+footer, div[style*="borderTop"] {
+  animation: fadeIn 1s ease-in;
 }
