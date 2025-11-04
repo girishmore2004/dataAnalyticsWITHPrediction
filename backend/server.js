@@ -153,63 +153,60 @@ const path = require("path");
 
 const app = express();
 
-// ✅ Enable CORS for your frontend & local testing
+// ✅ Force CORS headers for all routes (safe method)
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "https://data-analytics-with-prediction-x9hw.vercel.app");
+  res.header("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  next();
+});
+
 app.use(cors({
-  origin: [
-    "https://data-analytics-with-prediction-x9hw.vercel.app", // Vercel frontend
-    "http://localhost:3000" // for local testing
-  ],
+  origin: "https://data-analytics-with-prediction-x9hw.vercel.app",
   methods: ["GET", "POST"],
   credentials: true
 }));
 
 app.use(express.json());
 
-// ✅ Ensure upload folder exists (Render often resets file system)
+// ✅ Make sure upload folder exists (Render clears temp dirs)
 const uploadDir = path.join(__dirname, "uploads");
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir);
-}
+if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
 
 const upload = multer({ dest: uploadDir });
 
-// ✅ Upload CSV route
+// ✅ Upload route
 app.post("/upload", upload.single("file"), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: "No file uploaded" });
   }
 
   const dataset = { columns: [], rows: [] };
-  const filePath = path.join(__dirname, req.file.path);
+  const filePath = req.file.path; // ✅ Only use req.file.path (no __dirname)
 
-  try {
-    const readStream = fs.createReadStream(filePath);
-    readStream
-      .pipe(csv())
-      .on("headers", (headers) => (dataset.columns = headers))
-      .on("data", (row) => dataset.rows.push(Object.values(row)))
-      .on("end", () => {
-        res.json(dataset);
-        // delete temporary file after sending response
-        fs.unlink(filePath, (err) => {
-          if (err) console.error("File deletion error:", err);
-        });
-      })
-      .on("error", (err) => {
-        console.error("CSV Parsing Error:", err);
-        res.status(500).json({ error: "CSV Parsing Failed" });
+  fs.createReadStream(filePath)
+    .pipe(csv())
+    .on("headers", (headers) => (dataset.columns = headers))
+    .on("data", (row) => dataset.rows.push(Object.values(row)))
+    .on("end", () => {
+      res.json(dataset);
+      // ✅ Safely delete file after reading
+      fs.unlink(filePath, (err) => {
+        if (err) console.error("File deletion error:", err);
       });
-  } catch (err) {
-    console.error("Upload error:", err);
-    res.status(500).json({ error: "Server Error" });
-  }
+    })
+    .on("error", (err) => {
+      console.error("CSV Parsing Error:", err);
+      res.status(500).json({ error: "CSV Parsing Failed" });
+    });
 });
 
-// ✅ Health check route
+// ✅ Test route
 app.get("/", (req, res) => {
-  res.send("✅ Backend server is running successfully and CORS enabled 🚀");
+  res.send("✅ Backend server running and CORS fully enabled 🚀");
 });
 
-// ✅ Start server
+// ✅ Render dynamic port
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
+
