@@ -14,9 +14,11 @@ import os
 app = Flask(__name__)
 
 # ✅ Allow specific frontend origin for CORS
-CORS(app, resources={
-    r"/*": {"origins": ["https://data-analytics-with-prediction-x9hw.vercel.app"]}
-})
+CORS(app, resources={r"/*": {
+    "origins": ["https://data-analytics-with-prediction-x9hw.vercel.app"],
+    "methods": ["GET", "POST", "OPTIONS"],
+    "allow_headers": ["Content-Type"]
+}})
 
 # File paths for saving/loading the model and metadata
 MODEL_FILE = "best_model.pkl"
