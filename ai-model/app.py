@@ -12,7 +12,11 @@ import joblib
 import os
 
 app = Flask(__name__)
-CORS(app)
+
+# ✅ Allow specific frontend origin for CORS
+CORS(app, resources={
+    r"/*": {"origins": ["https://data-analytics-with-prediction-x9hw.vercel.app"]}
+})
 
 # File paths for saving/loading the model and metadata
 MODEL_FILE = "best_model.pkl"
@@ -23,6 +27,11 @@ TARGET_COLUMN_FILE = "target_column.pkl"
 model = None
 X_columns = None
 prediction_target = None
+
+@app.route("/", methods=["GET"])
+def home():
+    return jsonify({"message": "AI Model API is running 🚀"})
+
 
 @app.route("/predict", methods=["POST"])
 def predict():
