@@ -48,7 +48,12 @@ const fs = require("fs");
 const path = require("path");
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: ["https://data-analytics-with-prediction-x9hw.vercel.app"], // ✅ your frontend URL
+  methods: ["GET", "POST"],
+  allowedHeaders: ["Content-Type"],
+}));
+
 app.use(express.json());
 
 const upload = multer({ dest: "uploads/" });
