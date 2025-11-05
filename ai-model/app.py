@@ -14,11 +14,11 @@ import os
 app = Flask(__name__)
 
 # ✅ Allow specific frontend origin for CORS
-CORS(app, resources={r"/*": {
-    "origins": ["https://data-analytics-with-prediction-x9hw.vercel.app"],
-    "methods": ["GET", "POST", "OPTIONS"],
-    "allow_headers": ["Content-Type"]
-}})
+from flask_cors import CORS
+
+CORS(app, origins=["https://data-analytics-with-prediction-x9hw.vercel.app"], supports_credentials=True)
+
+
 
 # File paths for saving/loading the model and metadata
 MODEL_FILE = "best_model.pkl"
@@ -36,7 +36,10 @@ def home():
 
 
 # To this:
+from flask_cors import cross_origin
+
 @app.route("/predict", methods=["POST", "OPTIONS"])
+@cross_origin(origin="https://data-analytics-with-prediction-x9hw.vercel.app", headers=["Content-Type"])
 def predict():
     global model, X_columns, prediction_target
 
