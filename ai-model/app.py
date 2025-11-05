@@ -35,7 +35,8 @@ def home():
     return jsonify({"message": "AI Model API is running 🚀"})
 
 
-@app.route("/predict", methods=["POST"])
+# To this:
+@app.route("/predict", methods=["POST", "OPTIONS"])
 def predict():
     global model, X_columns, prediction_target
 
