@@ -1,11 +1,6 @@
-Absolutely ✅ — here’s the **entire README.md** placed **inside one complete Markdown code block** so you can just **copy-paste directly** into your GitHub repository without any formatting issues 👇
-
----
-
-```markdown
 # 📊 Data Analytics with AI Prediction
 
-An interactive **data analytics and AI-powered prediction platform** that enables users to upload CSV datasets, visualize data, select columns, and generate predictions using advanced machine learning models — all from a clean, responsive web interface.
+An interactive **data analytics and AI-powered prediction platform** that allows users to upload CSV datasets, visualize data, select columns, and make predictions using multiple machine learning models — all through a responsive and intuitive interface.
 
 ---
 
@@ -23,19 +18,13 @@ An interactive **data analytics and AI-powered prediction platform** that enable
 
 ✅ Upload and parse **CSV datasets**  
 ✅ View dataset structure (columns and rows)  
-✅ Select specific columns for analysis  
-✅ Choose a **target column** to predict  
-✅ Input new data values for predictions  
-✅ Automatically selects the **best ML model** among:
-  - Linear Regression  
-  - Decision Tree  
-  - Random Forest  
-  - Gradient Boosting  
-  - Support Vector Regressor  
-  - Neural Network Regressor  
-✅ Displays **R² score** and prediction result  
-✅ Multiple UI **themes** (Light, Dark, Blue, Purple, Green)  
-✅ 100% **responsive design** built with Bootstrap 5  
+✅ Select columns for analysis and prediction  
+✅ Choose a target column to predict  
+✅ Input new values to generate predictions  
+✅ Automatically selects **best ML model** (Linear Regression, Random Forest, Gradient Boosting, etc.)  
+✅ View **R² score** and **prediction results**  
+✅ Multiple color **themes** (Light, Dark, Blue, Purple, Green)  
+✅ Fully responsive UI built with **Bootstrap 5**
 
 ---
 
@@ -44,185 +33,165 @@ An interactive **data analytics and AI-powered prediction platform** that enable
 ### **Frontend (React)**
 - React.js  
 - React-Bootstrap  
-- Axios for API calls  
-- Hosted on **Vercel**
+- Axios  
+- Deployed on **Vercel**
 
 ### **Backend (Node.js)**
-- Express.js for API routing  
-- Multer for file upload  
-- CSV-Parser for CSV reading  
-- Hosted on **Render**
+- Express.js  
+- Multer (for file uploads)  
+- CSV-Parser (for reading CSV files)  
+- Deployed on **Render**
 
 ### **AI Model (Flask)**
 - Flask + Flask-CORS  
 - Pandas, NumPy  
-- Scikit-learn (Machine Learning)  
-- Hosted on **Railway**
+- Scikit-learn (ML algorithms)  
+- Deployed on **Railway**
 
 ---
 
-## 🛠️ Project Structure
+/data-analytics-with-ai-prediction
+│
+├── /frontend
+│ ├── /public
+│ ├── /src
+│ │ ├── /components
+│ │ │ ├── FileUpload.js
+│ │ │ ├── DataTable.js
+│ │ │ ├── PredictionForm.js
+│ │ │ └── ThemeSelector.js
+│ │ ├── App.js
+│ │ ├── index.js
+│ │ └── styles.js
+│ └── package.json
+│
+├── /backend
+│ ├── server.js
+│ ├── package.json
+│ ├── /uploads
+│ └── .env
+│
+└── /ai-model
+├── app.py
+├── model.pkl
+├── requirements.txt
+└── /data
 
-```
-
-dataAnalyticsWITHPrediction/
-│
-├── /frontend/                         # React Frontend
-│   ├── /components/                   # Reusable UI components
-│   ├── /pages/                        # Main pages (Home, Prediction, etc.)
-│   ├── App.js                         # Route and component configuration
-│   ├── index.js                       # Entry point
-│   └── package.json                   # Dependencies for frontend
-│
-├── /backend/                          # Node.js Backend
-│   ├── server.js                      # Express server
-│   ├── package.json                   # Dependencies for backend
-│   └── uploads/                       # Temporary uploaded CSVs
-│
-├── /ai-model/                         # Flask AI Model
-│   ├── app.py                         # Flask ML model API
-│   ├── requirements.txt               # Python dependencies
-│   └── best_model.pkl                 # Trained model file (auto-saved)
-│
-└── README.md                          # Project documentation
-
-````
 
 ---
 
-## ⚙️ How to Run Locally
+## ⚙️ Installation and Setup
 
-### **1. Clone the Repository**
+### **1️⃣ Clone the Repository**
 ```bash
 git clone https://github.com/girishmore2004/dataAnalyticsWITHPrediction.git
 cd dataAnalyticsWITHPrediction
-````
 
-### **2. Setup Backend (Node.js)**
-
-```bash
-cd backend
-npm install
-npm start
-```
-
-### **3. Setup AI Model (Flask)**
-
-```bash
-cd ai-model
-pip install -r requirements.txt
-python app.py
-```
-
-### **4. Setup Frontend (React)**
-
-```bash
+2️⃣ Setup Frontend (React)
 cd frontend
 npm install
 npm start
-```
 
-Now open **[http://localhost:3000](http://localhost:3000)** in your browser 🚀
 
----
+Runs on http://localhost:3000
 
-## 🌐 Environment Variables
+3️⃣ Setup Backend (Node.js + Express)
+cd ../backend
+npm install
+node server.js
 
-### **For Backend (.env in `/backend`)**
 
-```
+Runs on http://localhost:5000
+
+4️⃣ Setup AI Model (Python + Flask)
+cd ../ai-model
+pip install -r requirements.txt
+python app.py
+
+
+Runs on http://localhost:8000
+
+🔗 API Endpoints
+Backend (Render)
+Method	Endpoint	Description
+POST	/upload	Uploads a CSV file
+GET	/data	Fetches uploaded dataset
+AI Model (Railway)
+Method	Endpoint	Description
+POST	/predict	Receives JSON input and returns model prediction
+🌐 CORS Configuration
+
+Make sure CORS is properly configured between:
+
+Vercel (Frontend) → Render (Backend)
+
+Render (Backend) → Railway (AI Model)
+
+Example Flask setup:
+
+from flask_cors import CORS
+CORS(app, origins=["https://data-analytics-with-prediction-x9hw.vercel.app"])
+
+
+Example Express setup:
+
+app.use(cors({
+  origin: "https://data-analytics-with-prediction-x9hw.vercel.app",
+  methods: ["GET", "POST"],
+  credentials: true
+}));
+
+🧪 Example Prediction Flow
+
+1️⃣ User uploads a CSV file from the frontend.
+2️⃣ The file is sent to the Node.js backend (Render).
+3️⃣ Backend parses the CSV and sends the selected data to the Flask AI model (Railway).
+4️⃣ Flask processes the data and predicts results using trained ML models.
+5️⃣ The prediction and R² score are displayed on the frontend in a clean Bootstrap table.
+
+🎨 UI Overview
+Page	Description
+Home	Upload CSV and preview data
+Select Columns	Choose columns for analysis
+Prediction Page	Enter new data and view model output
+Theme Selector	Change color theme (Light/Dark/Blue/Purple/Green)
+🧾 Environment Variables
+
+Create .env file in backend:
+
 PORT=5000
-```
 
-### **For AI Model (Railway Variables)**
 
-```
-PORT=8080
-```
+If your backend interacts with the AI model:
 
----
+AI_MODEL_URL=https://dataanalyticswithprediction-production.up.railway.app/predict
 
-## 📦 API Endpoints
+🧰 Tools Used
 
-### **1. Backend (Node.js - Render)**
+Visual Studio Code
 
-| Method | Endpoint  | Description               |
-| ------ | --------- | ------------------------- |
-| `POST` | `/upload` | Upload and parse CSV file |
-| `GET`  | `/`       | Test API status           |
+Git + GitHub
 
-### **2. AI Model (Flask - Railway)**
+Postman (API testing)
 
-| Method | Endpoint   | Description                                  |
-| ------ | ---------- | -------------------------------------------- |
-| `GET`  | `/`        | Check API health                             |
-| `POST` | `/predict` | Send dataset and input values for prediction |
+Railway / Render / Vercel for deployment
 
----
+💡 Troubleshooting
+Issue	Cause	Solution
+CORS Error	Domains not allowed in Flask/Express	Add frontend domain to CORS
+405 Error	Wrong HTTP method or route	Ensure correct /predict POST route
+404 Not Found	API URL mismatch	Verify backend + AI URLs
+Network Error	Render/Railway app sleeping	Try refreshing after 30s
+Git Push Error (non-fast-forward)	Local branch behind remote	Run git pull origin main --rebase before push
+🤝 Contributing
 
-## 🧮 Sample Prediction Payload
+Pull requests are welcome!
+For major changes, please open an issue first to discuss what you would like to change.
 
-```json
-{
-  "dataset": {
-    "columns": ["Age", "Salary", "Experience", "Score"],
-    "rows": [
-      [25, 40000, 2, 60],
-      [30, 50000, 3, 70],
-      [35, 60000, 5, 80]
-    ]
-  },
-  "selectedColumns": ["Age", "Salary", "Experience", "Score"],
-  "targetColumn": "Score",
-  "inputValues": [28, 45000, 2.5, 0]
-}
-```
+🧑‍💻 Author
 
-✅ The API will return:
+👤 Girish More
+ 
 
-```json
-{
-  "prediction": 65.43,
-  "targetColumn": "Score",
-  "r2_score": 0.87,
-  "best_model": "RandomForestRegressor"
-}
-```
+## 🛠️ Project Structure
 
----
-
-## 🧰 Troubleshooting
-
-| Issue                    | Possible Fix                                                                     |
-| ------------------------ | -------------------------------------------------------------------------------- |
-| ❌ `CORS` error           | Ensure CORS is enabled in Flask (`Flask-CORS`) and frontend uses correct API URL |
-| ❌ 405 Method Not Allowed | Check if `/predict` is `POST`, not `GET`                                         |
-| ❌ Not Found (404)        | Verify Railway API URL ends with `/predict`                                      |
-| ❌ Model not responding   | Restart Railway service or redeploy Flask app                                    |
-
----
-
-## 👨‍💻 Author
-
-**Girish More**
-
----
-
-## ⭐ Acknowledgements
-
-* [Scikit-learn](https://scikit-learn.org/)
-* [Flask](https://flask.palletsprojects.com/)
-* [Bootstrap](https://getbootstrap.com/)
-* [Render](https://render.com/)
-* [Railway](https://railway.app/)
-* [Vercel](https://vercel.com/)
-
----
-
-## 🏁 Conclusion
-
-This project demonstrates seamless integration between **React**, **Node.js**, and **Flask AI models**, allowing users to experience **data analytics and ML predictions** in real-time through a modern, responsive web interface.
-
-```
----
-```
