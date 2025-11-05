@@ -167,22 +167,17 @@ import os
 app = Flask(__name__)
 
 # ✅ Proper CORS Configuration
+# This sets up the default CORS handling
 CORS(
     app,
-    resources={r"/*": {"origins": "*"}},
+    resources={r"/*": {"origins": "*"}},  # Allow all origins
     supports_credentials=True,
     allow_headers=["Content-Type", "Authorization"],
     methods=["GET", "POST", "OPTIONS"]
 )
 
-# ✅ Explicitly add CORS headers to every response
-@app.after_request
-def add_cors_headers(response):
-    response.headers["Access-Control-Allow-Origin"] = "*"
-    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
-    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
-    return response
-
+# ✅ Manually handle preflight 'OPTIONS' requests
+# This is the most important part to fix the error
 @app.before_request
 def handle_preflight():
     if request.method == "OPTIONS":
@@ -201,7 +196,7 @@ TARGET_COLUMN_FILE = "target_column.pkl"
 def home():
     return jsonify({"message": "AI Model API is running 🚀"})
 
-@app.route("/predict", methods=["POST", "OPTIONS"])
+@app.route("/predict", methods=["POST"])  # No need for "OPTIONS" here anymore
 def predict():
     try:
         data = request.json
@@ -225,6 +220,7 @@ def predict():
         X = df.drop(columns=[target_column])
         y = df[target_column]
 
+        # Use fillna(0) for simplicity as in your example
         X = X.apply(pd.to_numeric, errors="coerce").fillna(0)
         y = y.apply(pd.to_numeric, errors="coerce").fillna(0)
         X = pd.get_dummies(X)
@@ -252,14 +248,21 @@ def predict():
                     best_model, best_score, best_name = m, score, name
             except Exception as e:
                 print(f"{name} failed: {e}")
+        
+        # Ensure input_df has the same columns as the training data
+        input_df = pd.DataFrame([input_values])
+        input_df = input_df.apply(pd.to_numeric, errors="coerce").fillna(0)
+        input_df = pd.get_dummies(input_df)
+        # Reindex to match the columns from training
+        input_df = input_df.reindex(columns=X.columns, fill_value=0)
 
-        input_df = pd.DataFrame([input_values], columns=X.columns).reindex(columns=X.columns, fill_value=0)
         pred = best_model.predict(input_df)[0]
 
         return jsonify({
             "prediction": round(float(pred), 4),
             "r2_score": round(best_score, 4),
-            "model": best_name
+            "model": best_name,
+            "targetColumn": target_column # Added this back from your original code
         })
 
     except Exception as e:
@@ -267,5 +270,4 @@ def predict():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
-    
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5001)))
