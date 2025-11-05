@@ -168,7 +168,8 @@ app = Flask(__name__)
 
 # ✅ Simplified global CORS setup
 # This tells flask_cors to handle CORS for all routes by default
-CORS(app)
+CORS(app, origins=["https://data-analytics-with-prediction-x9hw.vercel.app"])
+
 
 # ‼ We are REMOVING the manual @app.before_request handler
 # as it may conflict with the decorators.
