@@ -152,7 +152,7 @@
 #     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5001)))
 
 from flask import Flask, request, jsonify, make_response
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin # Import cross_origin
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
@@ -166,26 +166,12 @@ import os
 
 app = Flask(__name__)
 
-# ✅ Proper CORS Configuration
-# This sets up the default CORS handling
-CORS(
-    app,
-    resources={r"/*": {"origins": "*"}},  # Allow all origins
-    supports_credentials=True,
-    allow_headers=["Content-Type", "Authorization"],
-    methods=["GET", "POST", "OPTIONS"]
-)
+# ✅ Simplified global CORS setup
+# This tells flask_cors to handle CORS for all routes by default
+CORS(app)
 
-# ✅ Manually handle preflight 'OPTIONS' requests
-# This is the most important part to fix the error
-@app.before_request
-def handle_preflight():
-    if request.method == "OPTIONS":
-        response = make_response()
-        response.headers["Access-Control-Allow-Origin"] = "*"
-        response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
-        response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
-        return response
+# ‼ We are REMOVING the manual @app.before_request handler
+# as it may conflict with the decorators.
 
 # File paths for saving/loading model
 MODEL_FILE = "best_model.pkl"
@@ -193,11 +179,16 @@ X_COLUMNS_FILE = "x_columns.pkl"
 TARGET_COLUMN_FILE = "target_column.pkl"
 
 @app.route("/", methods=["GET"])
+@cross_origin() # Add decorator here too, just in case
 def home():
     return jsonify({"message": "AI Model API is running 🚀"})
 
-@app.route("/predict", methods=["POST"])  # No need for "OPTIONS" here anymore
+# ✅ Add "OPTIONS" to methods and the @cross_origin decorator
+@app.route("/predict", methods=["POST", "OPTIONS"])
+@cross_origin() # This will explicitly handle the OPTIONS preflight request
 def predict():
+    # The OPTIONS request will be handled by @cross_origin,
+    # so only POST requests will reach this logic.
     try:
         data = request.json
         if not data:
