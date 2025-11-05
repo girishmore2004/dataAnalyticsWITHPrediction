@@ -168,16 +168,13 @@ import os
 app = Flask(__name__)
 
 # ✅ Fix CORS issue: Allow specific origins (Vercel + localhost)
-CORS(app, resources={
-    r"/*": {
-        "origins": [
-            "https://data-analytics-with-prediction-x9hw.vercel.app",
-            "http://localhost:3000"
-        ],
-        "methods": ["GET", "POST", "OPTIONS"],
-        "allow_headers": ["Content-Type", "Authorization"]
-    }
-})
+CORS(
+    app,
+    resources={r"/*": {"origins": "*"}},
+    supports_credentials=True,
+    allow_headers=["Content-Type", "Authorization"],
+    methods=["GET", "POST", "OPTIONS"]
+)
 
 # File paths for saving/loading the model and metadata
 MODEL_FILE = "best_model.pkl"
@@ -193,6 +190,18 @@ prediction_target = None
 def home():
     return jsonify({"message": "✅ AI Model API is running successfully!"})
 
+
+@app.before_request
+def handle_options():
+    if request.method == "OPTIONS":
+        response = app.make_default_options_response()
+        headers = response.headers
+
+        headers["Access-Control-Allow-Origin"] = "*"
+        headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+        headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+
+        return response
 
 @app.route("/predict", methods=["POST"])
 def predict():
@@ -292,4 +301,4 @@ def predict():
 if __name__ == "__main__":
 
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5001)))
-    
+
