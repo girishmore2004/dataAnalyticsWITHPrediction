@@ -151,8 +151,8 @@
 #     import os
 #     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5001)))
 
-from flask import Flask, request, jsonify, make_response
-from flask_cors import CORS, cross_origin # Import cross_origin
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
@@ -166,30 +166,33 @@ import os
 
 app = Flask(__name__)
 
-# ✅ Simplified global CORS setup
-# This tells flask_cors to handle CORS for all routes by default
-CORS(app, origins=["https://data-analytics-with-prediction-x9hw.vercel.app"])
+# ✅ Enable CORS for all routes and explicitly allow your frontend
+CORS(app, resources={r"/*": {"origins": [
+    "https://data-analytics-with-prediction-x9hw.vercel.app",
+    "http://localhost:3000"
+]}}, supports_credentials=True)
 
-
-# ‼ We are REMOVING the manual @app.before_request handler
-# as it may conflict with the decorators.
-
-# File paths for saving/loading model
 MODEL_FILE = "best_model.pkl"
 X_COLUMNS_FILE = "x_columns.pkl"
 TARGET_COLUMN_FILE = "target_column.pkl"
 
-@app.route("/", methods=["GET"])
-@cross_origin() # Add decorator here too, just in case
+@app.route("/", methods=["GET", "OPTIONS"])
 def home():
-    return jsonify({"message": "AI Model API is running 🚀"})
+    if request.method == "OPTIONS":
+        return jsonify({"message": "Preflight OK"}), 200
+    return jsonify({"message": "AI Model API is running 🚀"}), 200
 
-# ✅ Add "OPTIONS" to methods and the @cross_origin decorator
+
 @app.route("/predict", methods=["POST", "OPTIONS"])
-@cross_origin() # This will explicitly handle the OPTIONS preflight request
 def predict():
-    # The OPTIONS request will be handled by @cross_origin,
-    # so only POST requests will reach this logic.
+    # ✅ Handle CORS preflight request
+    if request.method == "OPTIONS":
+        response = jsonify({"message": "CORS preflight successful"})
+        response.headers.add("Access-Control-Allow-Origin", "https://data-analytics-with-prediction-x9hw.vercel.app")
+        response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization")
+        response.headers.add("Access-Control-Allow-Methods", "POST,OPTIONS")
+        return response, 200
+
     try:
         data = request.json
         if not data:
@@ -212,7 +215,6 @@ def predict():
         X = df.drop(columns=[target_column])
         y = df[target_column]
 
-        # Use fillna(0) for simplicity as in your example
         X = X.apply(pd.to_numeric, errors="coerce").fillna(0)
         y = y.apply(pd.to_numeric, errors="coerce").fillna(0)
         X = pd.get_dummies(X)
@@ -228,38 +230,42 @@ def predict():
             "NeuralNetwork": MLPRegressor(random_state=42, max_iter=1000)
         }
 
-        best_model = None
-        best_score = -float("inf")
-        best_name = ""
+        best_model, best_score, best_name = None, -float("inf"), ""
 
-        for name, m in models.items():
+        for name, model_instance in models.items():
             try:
-                m.fit(X_train, y_train)
-                score = r2_score(y_test, m.predict(X_test))
+                model_instance.fit(X_train, y_train)
+                score = r2_score(y_test, model_instance.predict(X_test))
                 if score > best_score:
-                    best_model, best_score, best_name = m, score, name
+                    best_model, best_score, best_name = model_instance, score, name
             except Exception as e:
                 print(f"{name} failed: {e}")
-        
-        # Ensure input_df has the same columns as the training data
+
+        # Prepare input for prediction
         input_df = pd.DataFrame([input_values])
         input_df = input_df.apply(pd.to_numeric, errors="coerce").fillna(0)
         input_df = pd.get_dummies(input_df)
-        # Reindex to match the columns from training
         input_df = input_df.reindex(columns=X.columns, fill_value=0)
 
         pred = best_model.predict(input_df)[0]
 
-        return jsonify({
+        # ✅ Add explicit CORS header to every response
+        response = jsonify({
             "prediction": round(float(pred), 4),
             "r2_score": round(best_score, 4),
             "model": best_name,
-            "targetColumn": target_column # Added this back from your original code
+            "targetColumn": target_column
         })
+        response.headers.add("Access-Control-Allow-Origin", "https://data-analytics-with-prediction-x9hw.vercel.app")
+        return response, 200
 
     except Exception as e:
         print("Prediction error:", e)
-        return jsonify({"error": str(e)}), 500
+        response = jsonify({"error": str(e)})
+        response.headers.add("Access-Control-Allow-Origin", "https://data-analytics-with-prediction-x9hw.vercel.app")
+        return response, 500
 
+
+# ✅ Run app
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5001)))
