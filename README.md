@@ -10,7 +10,7 @@ An interactive **data analytics and AI-powered prediction platform** that allows
 |------------|-------------|---------------------|-----------|
 | **Frontend** | React (Bootstrap) | [Vercel](https://vercel.com/) | 🔗 [https://data-analytics-with-prediction-x9hw.vercel.app](https://data-analytics-with-prediction-x9hw.vercel.app) |
 | **Backend (File Upload API)** | Node.js + Express | [Render](https://render.com/) | 🔗 [https://dataanalyticswithprediction.onrender.com](https://dataanalyticswithprediction.onrender.com) |
-| **AI Model API** | Python (Flask + Scikit-learn) | [Railway](https://railway.app/) | 🔗 [https://dataanalyticswithprediction.up.railway.app](https://dataanalyticswithprediction.up.railway.app) |
+| **AI Model API** | Python (Flask + Scikit-learn) | [Railway](https://railway.app/) | 🔗 [https://dataanalyticswithprediction-production.up.railway.app/](https://dataanalyticswithprediction-production.up.railway.app/) |
 
 ---
 
