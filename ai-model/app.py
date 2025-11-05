@@ -16,7 +16,7 @@ app = Flask(__name__)
 # ✅ Allow specific frontend origin for CORS
 from flask_cors import CORS, cross_origin
 
-CORS(app, origins=["https://data-analytics-with-prediction-x9hw.vercel.app"], supports_credentials=True)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 
 
@@ -38,7 +38,7 @@ def home():
 
 
 @app.route("/predict", methods=["POST", "OPTIONS"])
-@cross_origin(origin="https://data-analytics-with-prediction-x9hw.vercel.app", headers=["Content-Type"])
+@cross_origin()
 def predict():
     global model, X_columns, prediction_target
 
