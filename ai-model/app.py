@@ -161,20 +161,25 @@ from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 from sklearn.svm import SVR
 from sklearn.neural_network import MLPRegressor
 from sklearn.metrics import r2_score
-import joblib
 import os
 
 app = Flask(__name__)
 
-# ✅ Enable CORS for all routes and explicitly allow your frontend
-CORS(app, resources={r"/*": {"origins": [
+# ✅ Allow both localhost and vercel origin explicitly
+CORS(app, origins=[
     "https://data-analytics-with-prediction-x9hw.vercel.app",
     "http://localhost:3000"
-]}}, supports_credentials=True)
+])
 
-MODEL_FILE = "best_model.pkl"
-X_COLUMNS_FILE = "x_columns.pkl"
-TARGET_COLUMN_FILE = "target_column.pkl"
+@app.after_request
+def after_request(response):
+    """Ensure every response (including preflight) contains CORS headers"""
+    response.headers.add("Access-Control-Allow-Origin", "https://data-analytics-with-prediction-x9hw.vercel.app")
+    response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization")
+    response.headers.add("Access-Control-Allow-Methods", "GET,POST,OPTIONS")
+    response.headers.add("Access-Control-Allow-Credentials", "true")
+    return response
+
 
 @app.route("/", methods=["GET", "OPTIONS"])
 def home():
@@ -185,16 +190,12 @@ def home():
 
 @app.route("/predict", methods=["POST", "OPTIONS"])
 def predict():
-    # ✅ Handle CORS preflight request
+    # ✅ Handle preflight request first
     if request.method == "OPTIONS":
-        response = jsonify({"message": "CORS preflight successful"})
-        response.headers.add("Access-Control-Allow-Origin", "https://data-analytics-with-prediction-x9hw.vercel.app")
-        response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization")
-        response.headers.add("Access-Control-Allow-Methods", "POST,OPTIONS")
-        return response, 200
+        return jsonify({"message": "Preflight OK"}), 200
 
     try:
-        data = request.json
+        data = request.get_json()
         if not data:
             return jsonify({"error": "Invalid request body"}), 400
 
@@ -241,7 +242,6 @@ def predict():
             except Exception as e:
                 print(f"{name} failed: {e}")
 
-        # Prepare input for prediction
         input_df = pd.DataFrame([input_values])
         input_df = input_df.apply(pd.to_numeric, errors="coerce").fillna(0)
         input_df = pd.get_dummies(input_df)
@@ -249,23 +249,18 @@ def predict():
 
         pred = best_model.predict(input_df)[0]
 
-        # ✅ Add explicit CORS header to every response
-        response = jsonify({
+        return jsonify({
             "prediction": round(float(pred), 4),
             "r2_score": round(best_score, 4),
             "model": best_name,
             "targetColumn": target_column
         })
-        response.headers.add("Access-Control-Allow-Origin", "https://data-analytics-with-prediction-x9hw.vercel.app")
-        return response, 200
 
     except Exception as e:
         print("Prediction error:", e)
-        response = jsonify({"error": str(e)})
-        response.headers.add("Access-Control-Allow-Origin", "https://data-analytics-with-prediction-x9hw.vercel.app")
-        return response, 500
+        return jsonify({"error": str(e)}), 500
 
 
-# ✅ Run app
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5001)))
+
