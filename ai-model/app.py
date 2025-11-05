@@ -169,7 +169,7 @@ app = Flask(__name__)
 CORS(app, origins=[
     "https://data-analytics-with-prediction-x9hw.vercel.app",
     "http://localhost:3000"
-])
+], supports_credentials=True)
 
 @app.after_request
 def after_request(response):
