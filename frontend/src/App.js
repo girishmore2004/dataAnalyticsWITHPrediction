@@ -136,7 +136,7 @@ function App() {
         formattedInputValues[key] = parseFloat(value);
       }
 
-      const response = await axios.post("dataanalyticswithprediction-production.up.railway.app/predict", {
+      const response = await axios.post("https://dataanalyticswithprediction-production.up.railway.app/predict", {
         dataset,
         selectedColumns,
         targetColumn,
