@@ -16,7 +16,8 @@ app = Flask(__name__)
 # ✅ Allow specific frontend origin for CORS
 from flask_cors import CORS, cross_origin
 
-CORS(app, resources={r"/*": {"origins": "*"}})
+CORS(app, resources={r"/*": {"origins": "*", "methods": ["GET", "POST", "OPTIONS"], "allow_headers": ["Content-Type"]}})
+
 
 
 
